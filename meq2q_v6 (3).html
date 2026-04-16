@@ -1,0 +1,2281 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, user-scalable=no">
+<title>ระบบข้อสอบ MEQ / 2Q — มหาวิทยาลัยพะเยา</title>
+<link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;500;600;700&family=IBM+Plex+Mono:wght@500&display=swap" rel="stylesheet">
+<style>
+:root{
+  --navy:#0b1f3a;--navy2:#142d52;--blue:#1a6fd4;--blue-pale:#e8f1fc;
+  --teal:#0d8c8c;--teal-pale:#e0f7f7;--gold:#c8860a;--gold-pale:#fef3dc;
+  --red:#c0392b;--red-pale:#fdecea;--green:#1a7a3f;--green-pale:#e6f5ec;
+  --purple:#6d28d9;--purple-pale:#f3e8ff;
+  --bg:#f0f4fa;--surface:#fff;--s2:#f7f9fd;
+  --border:#dde4ef;--border2:#c5cfe0;
+  --txt:#1a2535;--txt2:#4a5a70;--txt3:#8a96a8;
+  --r:12px;--rsm:8px;--sh:0 2px 12px rgba(11,31,58,.08);--shmd:0 6px 28px rgba(11,31,58,.14);
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%;font-family:'Sarabun',sans-serif;background:var(--bg);color:var(--txt);font-size:15px}
+.page{display:none;min-height:100vh;flex-direction:column}
+.page.on{display:flex}
+
+/* TOPBAR */
+.topbar{background:var(--navy);height:52px;padding:0 16px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:300;box-shadow:0 2px 10px rgba(0,0,0,.2)}
+.tb-brand{display:flex;align-items:center;gap:7px;color:#fff;font-size:14px;font-weight:700;flex-shrink:0}
+.tb-brand em{font-size:18px;font-style:normal}
+.tb-r{display:flex;align-items:center;gap:4px;flex-wrap:wrap;justify-content:flex-end}
+.tb-user{color:rgba(255,255,255,.5);font-size:12px;padding:0 8px;border-right:1px solid rgba(255,255,255,.12);margin-right:3px;white-space:nowrap}
+.np{color:rgba(255,255,255,.82);font-family:'Sarabun',sans-serif;font-size:12px;font-weight:600;padding:4px 10px;border-radius:50px;border:none;cursor:pointer;background:rgba(255,255,255,.1);transition:background .14s;white-space:nowrap}
+.np:hover{background:rgba(255,255,255,.18)}
+.np.red:hover{background:rgba(192,57,43,.5)}
+
+/* WRAP */
+.wrap{max-width:1280px;margin:0 auto;padding:20px 16px;flex:1;width:100%}
+.wrap-sm{max-width:660px;margin:0 auto;padding:20px 16px;flex:1;width:100%}
+.pg-h{font-size:21px;font-weight:700;color:var(--navy);margin-bottom:2px}
+.pg-s{font-size:12px;color:var(--txt2);margin-bottom:16px}
+
+/* CARD */
+.card{background:var(--surface);border-radius:var(--r);border:1px solid var(--border);box-shadow:var(--sh)}
+.card-h{padding:13px 17px 10px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;gap:8px;flex-wrap:wrap}
+.card-t{font-size:13px;font-weight:700;color:var(--navy)}
+.card-b{padding:16px}
+
+/* STATS */
+.stat-row{display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:9px;margin-bottom:16px}
+.stat{background:var(--surface);border-radius:var(--r);border:1px solid var(--border);padding:13px 15px;display:flex;align-items:center;gap:9px}
+.si{font-size:22px}.sv{font-size:21px;font-weight:800;color:var(--navy);line-height:1}.sl{font-size:11px;color:var(--txt2);margin-top:1px}
+
+/* BUTTONS */
+.btn{display:inline-flex;align-items:center;gap:5px;padding:6px 13px;border-radius:var(--rsm);border:none;cursor:pointer;font-family:'Sarabun',sans-serif;font-size:13px;font-weight:600;transition:all .13s;white-space:nowrap}
+.btn:active{transform:scale(.97)}
+.btn-blue{background:var(--blue);color:#fff}.btn-blue:hover{background:#155dba}
+.btn-navy{background:var(--navy);color:#fff}.btn-navy:hover{background:var(--navy2)}
+.btn-teal{background:var(--teal);color:#fff}.btn-teal:hover{background:#0a7070}
+.btn-red{background:var(--red);color:#fff}.btn-red:hover{background:#a53025}
+.btn-ghost{background:transparent;border:1.5px solid var(--border);color:var(--txt2)}.btn-ghost:hover{background:var(--bg)}
+.btn-purple{background:var(--purple);color:#fff}.btn-purple:hover{background:#5b21b6}
+.btn-gold{background:var(--gold);color:#fff}.btn-gold:hover{background:#a06c08}
+.btn-green{background:var(--green);color:#fff}.btn-green:hover{background:#145f30}
+.btn-sm{padding:4px 9px;font-size:12px}
+.btn-lg{padding:11px 22px;font-size:15px}
+.btn-full{width:100%;justify-content:center}
+.btn:disabled{opacity:.4;cursor:not-allowed;transform:none!important}
+
+/* FORM */
+.field{margin-bottom:11px}
+.field label{display:block;font-size:11px;font-weight:600;color:var(--txt);margin-bottom:3px}
+.req{color:var(--red)}
+input[type=text],input[type=number],input[type=password],textarea,select{width:100%;padding:7px 10px;border:1.5px solid var(--border);border-radius:var(--rsm);font-size:13px;font-family:'Sarabun',sans-serif;color:var(--txt);background:var(--s2);transition:border-color .14s}
+input:focus,textarea:focus,select:focus{outline:none;border-color:var(--blue);background:#fff}
+textarea{resize:vertical;min-height:60px}
+
+/* GRID */
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.g3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px}
+@media(max-width:600px){.g2,.g3{grid-template-columns:1fr}}
+
+/* TABLE */
+.tbl{width:100%;border-collapse:collapse}
+.tbl th{background:var(--s2);padding:8px 12px;text-align:left;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.4px;color:var(--txt2);border-bottom:1px solid var(--border)}
+.tbl td{padding:8px 12px;font-size:12px;border-bottom:1px solid var(--border);vertical-align:middle}
+.tbl tr:last-child td{border-bottom:none}
+.tbl tr:hover td{background:var(--s2)}
+
+/* BADGES */
+.badge{display:inline-flex;align-items:center;padding:2px 7px;border-radius:50px;font-size:11px;font-weight:700}
+.b-blue{background:var(--blue-pale);color:#1050a0}.b-teal{background:var(--teal-pale);color:#0a6060}
+.b-green{background:var(--green-pale);color:var(--green)}.b-red{background:var(--red-pale);color:var(--red)}
+.b-gray{background:#edf0f5;color:var(--txt2)}.b-purple{background:var(--purple-pale);color:var(--purple)}
+.b-gold{background:var(--gold-pale);color:var(--gold)}
+.tag{display:inline-flex;padding:2px 7px;background:var(--blue-pale);color:var(--blue);border-radius:50px;font-size:11px;font-weight:500;margin-right:3px}
+.tag-d{background:var(--purple-pale);color:var(--purple)}
+
+/* ALERT */
+.al{padding:9px 12px;border-radius:var(--rsm);font-size:12px;margin-bottom:10px;display:flex;gap:7px;border-width:1px;border-style:solid;align-items:flex-start}
+.al-info{background:var(--blue-pale);color:#1050a0;border-color:#b3cff5}
+.al-warn{background:var(--gold-pale);color:#7a5000;border-color:#f5d88a}
+.al-red{background:var(--red-pale);color:var(--red);border-color:#f5b3ae}
+.al-green{background:var(--green-pale);color:var(--green);border-color:#a5d9bb}
+
+/* EMPTY */
+.empty{text-align:center;padding:32px 16px;color:var(--txt2)}
+.empty .ei{font-size:34px;margin-bottom:7px}
+
+/* MODAL */
+.overlay{position:fixed;inset:0;background:rgba(0,0,0,.52);z-index:1000;display:none;align-items:center;justify-content:center;padding:12px;backdrop-filter:blur(2px)}
+.overlay.open{display:flex}
+.modal{background:#fff;border-radius:16px;width:100%;max-width:700px;max-height:94vh;overflow-y:auto;box-shadow:var(--shmd)}
+.modal-h{padding:16px 20px 12px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;background:#fff;z-index:2}
+.modal-t{font-size:15px;font-weight:700;color:var(--navy)}
+.modal-x{background:none;border:none;font-size:20px;cursor:pointer;color:var(--txt2);padding:2px 5px}
+.modal-b{padding:17px 20px}
+.modal-f{padding:10px 20px 17px;display:flex;gap:8px;justify-content:flex-end;border-top:1px solid var(--border)}
+
+/* SIDEBAR */
+.sidebar{background:var(--surface);border-radius:var(--r);border:1px solid var(--border);overflow:hidden}
+.sm-i{display:flex;align-items:center;gap:7px;padding:10px 14px;border-bottom:1px solid var(--border);cursor:pointer;font-size:13px;font-weight:500;color:var(--txt);transition:background .12s}
+.sm-i:last-child{border-bottom:none}
+.sm-i:hover{background:var(--bg)}
+.sm-i.on{background:var(--blue-pale);color:var(--blue);font-weight:700}
+
+/* EXAM ROW */
+.exam-row{display:flex;align-items:center;gap:10px;padding:11px 15px;border-bottom:1px solid var(--border);cursor:pointer;transition:background .1s}
+.exam-row:last-child{border-bottom:none}
+.exam-row:hover{background:var(--s2)}
+.etype{width:40px;height:40px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:800;flex-shrink:0}
+.et-meq{background:var(--blue-pale);color:var(--blue)}
+.et-2q{background:var(--purple-pale);color:var(--purple)}
+
+/* STUDENT CARD */
+.s-card{background:var(--surface);border-radius:var(--r);border:1.5px solid var(--border);padding:15px;cursor:pointer;transition:all .15s;display:flex;align-items:flex-start;gap:11px;margin-bottom:8px}
+.s-card:hover{border-color:var(--blue);box-shadow:0 4px 14px rgba(26,111,212,.1);transform:translateY(-1px)}
+
+/* ═══ CREATE LAYOUT ═══ */
+.cr-layout{display:grid;grid-template-columns:260px 1fr;gap:12px;align-items:start}
+@media(max-width:860px){.cr-layout{grid-template-columns:1fr}}
+.cr-left{display:flex;flex-direction:column;gap:10px;position:sticky;top:58px}
+
+/* PASTE ZONE */
+.pzone{border:2px dashed var(--border2);border-radius:var(--rsm);min-height:clamp(100px,20vw,140px);display:flex;align-items:center;justify-content:center;cursor:pointer;transition:all .16s;position:relative;overflow:hidden;background:var(--s2)}
+.pzone:hover,.pzone.drag{border-color:var(--blue);background:var(--blue-pale)}
+.pzone.filled{border-style:solid;border-color:var(--border);background:#0c1a2e;cursor:default;padding:0;min-height:120px}
+.pzone img{width:100%;max-height:220px;object-fit:contain;display:block;border-radius:var(--rsm)}
+.ph{display:flex;flex-direction:column;align-items:center;gap:5px;color:var(--txt2);pointer-events:none}
+.ph .pi{font-size:26px}
+.ph p{font-size:11px;text-align:center;line-height:1.5}
+.pzone-btns{position:absolute;top:5px;right:5px;display:flex;gap:3px}
+.pzone-btns button{background:rgba(0,0,0,.6);color:#fff;border:none;border-radius:4px;padding:2px 6px;cursor:pointer;font-size:11px;font-family:'Sarabun',sans-serif}
+
+/* SLIDE STRIP */
+.sstrip{display:flex;gap:6px;flex-wrap:wrap;padding:8px}
+.sthumb{width:76px;height:54px;border-radius:6px;border:2px solid var(--border);overflow:hidden;cursor:pointer;position:relative;flex-shrink:0;transition:border-color .12s}
+.sthumb.on{border-color:var(--blue)}
+.sthumb img{width:100%;height:100%;object-fit:cover;display:block}
+.sthumb .sn{position:absolute;top:2px;left:2px;background:var(--navy);color:#fff;font-size:8px;font-weight:700;padding:1px 4px;border-radius:2px}
+.sthumb .sd{position:absolute;top:2px;right:2px;background:var(--red);color:#fff;border:none;width:14px;height:14px;border-radius:50%;cursor:pointer;font-size:9px;display:flex;align-items:center;justify-content:center}
+.sthumb .sno{width:100%;height:100%;display:flex;align-items:center;justify-content:center;background:var(--s2);font-size:9px;color:var(--txt2);text-align:center;padding:2px}
+.add-sthumb{width:76px;height:54px;border-radius:6px;border:2px dashed var(--border2);display:flex;align-items:center;justify-content:center;cursor:pointer;color:var(--txt2);font-size:18px;transition:all .14s;flex-shrink:0;background:var(--s2)}
+.add-sthumb:hover{border-color:var(--blue);color:var(--blue);background:var(--blue-pale)}
+
+/* COMMON Q PILL */
+.cq-pill{display:inline-block;padding:3px 8px;border-radius:4px;border:1px solid var(--border);background:var(--s2);font-size:11px;color:var(--txt2);cursor:pointer;margin:2px;transition:all .12s;line-height:1.4}
+.cq-pill:hover{background:var(--blue-pale);color:var(--blue);border-color:var(--blue)}
+
+/* 2Q item card */
+.q2-item{background:var(--surface);border-radius:var(--r);border:1px solid var(--border);margin-bottom:10px;overflow:hidden}
+.q2-item-h{background:#0c1a2e;color:#fff;padding:9px 13px;display:flex;align-items:center;justify-content:space-between;font-size:12px;font-weight:700}
+.q2-item-b{padding:13px}
+
+/* MEQ major item */
+.meq-major{background:var(--surface);border-radius:var(--r);border:2px solid var(--border);margin-bottom:12px;overflow:hidden}
+.meq-major-h{background:var(--navy);color:#fff;padding:10px 14px;display:flex;align-items:center;justify-content:space-between;font-size:13px;font-weight:700}
+.meq-major-b{padding:14px}
+/* MEQ sub item */
+.meq-sub-item{background:var(--s2);border-radius:var(--rsm);border:1px solid var(--border);margin-bottom:9px;overflow:hidden}
+.meq-sub-h{background:var(--blue-pale);padding:7px 11px;display:flex;align-items:center;justify-content:space-between;font-size:11px;font-weight:700;color:var(--blue)}
+.meq-sub-b{padding:11px}
+
+/* ═══ EXAM TAKING ═══ */
+/* 2Q: fixed left panel (question always same), right panel changes */
+.exam-2q-shell{display:grid;grid-template-columns:1fr 1fr;height:calc(100dvh - 52px)}
+@media(max-width:720px){.exam-2q-shell{grid-template-columns:1fr;height:auto}}
+
+/* MEQ: full screen one-at-a-time */
+.exam-meq-shell{display:grid;grid-template-columns:1fr 1fr;height:calc(100dvh - 52px)}
+@media(max-width:720px){.exam-meq-shell{grid-template-columns:1fr;height:auto}}
+
+.ex-l{background:#0c1a2e;display:flex;flex-direction:column;min-height:0}
+.ex-l-hd{background:rgba(255,255,255,.04);padding:9px 13px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid rgba(255,255,255,.07)}
+.ex-qnum{color:#fff;font-size:13px;font-weight:700}
+.ex-prog{color:rgba(255,255,255,.4);font-size:10px}
+.ex-img{flex:1;display:flex;align-items:center;justify-content:center;padding:10px;overflow:hidden}
+.ex-img img{max-width:100%;max-height:100%;object-fit:contain;border-radius:5px}
+.ex-noimg{color:rgba(255,255,255,.3);font-size:13px;text-align:center}
+.ex-cap{padding:8px 13px;color:rgba(255,255,255,.82);font-size:13px;background:rgba(255,255,255,.05);border-bottom:1px solid rgba(255,255,255,.08);min-height:32px;font-weight:500}
+
+.ex-r{background:#f0f4fa;display:flex;flex-direction:column;overflow:hidden;min-height:0}
+.ex-tbar{background:#fff;padding:9px 13px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:9px}
+.ex-ans-area{flex:1;overflow-y:auto;padding:11px;-webkit-overflow-scrolling:touch}
+.ex-ans-card{background:#fff;border-radius:var(--rsm);border:1.5px solid var(--border);padding:10px;margin-bottom:8px}
+.ex-ans-lbl{font-size:11px;font-weight:700;color:var(--navy);margin-bottom:5px;display:flex;align-items:center;gap:5px}
+.ex-ans-lbl .qi{background:var(--blue);color:#fff;width:19px;height:19px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:9px}
+.ex-dots{background:#fff;padding:7px 13px;border-top:1px solid var(--border);display:flex;gap:5px;flex-wrap:wrap}
+.dot{width:26px;height:26px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700}
+.d-idle{background:#e2e8f0;color:var(--txt2)}.d-cur{background:var(--blue);color:#fff}.d-done{background:var(--green);color:#fff}
+.d-nav{cursor:pointer;transition:opacity .12s}.d-nav:hover{opacity:.75}
+
+/* TIMER */
+.tring{position:relative;flex-shrink:0}
+.tring svg{transform:rotate(-90deg)}
+.tr-bg{fill:none;stroke:#e2e8f0;stroke-width:6}
+.tr-fg{fill:none;stroke:var(--blue);stroke-width:6;stroke-linecap:round;transition:stroke-dashoffset .85s linear,stroke .4s}
+.tr-txt{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:800;color:var(--navy)}
+.tring.warn .tr-fg{stroke:var(--gold)}.tring.danger .tr-fg{stroke:var(--red)}.tring.danger .tr-txt{color:var(--red)}
+.tr-sm .tr-txt{color:#fff;font-size:11px}
+
+/* BRIEFING */
+.brief-wrap{max-width:580px;margin:32px auto;padding:0 14px}
+.brief-card{background:#fff;border-radius:16px;padding:26px;box-shadow:var(--shmd)}
+
+/* DONE */
+.done-wrap{max-width:480px;margin:60px auto;padding:0 14px;text-align:center}
+
+/* ADMIN */
+.adm-layout{display:grid;grid-template-columns:180px 1fr;gap:16px;align-items:start}
+.adm-sec{display:none}.adm-sec.on{display:block}
+@media(max-width:600px){.adm-layout{grid-template-columns:1fr}}
+
+/* BANK */
+.bank-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:10px}
+.bcard{background:#fff;border-radius:var(--r);border:1.5px solid var(--border);overflow:hidden;cursor:pointer;transition:all .15s}
+.bcard:hover{border-color:var(--blue);box-shadow:0 5px 16px rgba(26,111,212,.1);transform:translateY(-2px)}
+.bthumb{height:100px;background:linear-gradient(135deg,var(--navy),var(--navy2));display:flex;align-items:center;justify-content:center;position:relative;overflow:hidden}
+.bthumb img{width:100%;height:100%;object-fit:cover}
+
+/* LOGIN */
+#pg-login{background:linear-gradient(135deg,var(--navy) 0%,var(--navy2) 100%);align-items:center;justify-content:center}
+.login-box{background:#fff;border-radius:18px;padding:36px 32px;width:100%;max-width:360px;box-shadow:0 20px 60px rgba(0,0,0,.3)}
+.login-badge{display:inline-flex;align-items:center;gap:7px;background:var(--navy);color:#fff;padding:7px 16px;border-radius:50px;font-size:15px;font-weight:800;letter-spacing:.8px;margin-bottom:7px}
+.login-sub{color:var(--txt2);font-size:12px;line-height:1.7;margin-bottom:20px}
+.err{color:var(--red);font-size:12px;text-align:center;margin-top:6px;display:none}
+
+/* PRINT */
+.print-area{display:none}
+@media print{body>*:not(.print-area){display:none!important}.print-area{display:block!important}}
+::-webkit-scrollbar{width:5px}::-webkit-scrollbar-thumb{background:var(--border2);border-radius:3px}
+.page{animation:fu .16s ease}@keyframes fu{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:none}}
+
+/* pick-items modal */
+.pick-item{display:flex;align-items:center;gap:9px;padding:9px 12px;border-bottom:1px solid var(--border);cursor:pointer;transition:background .12s}
+.pick-item:last-child{border-bottom:none}
+.pick-item:hover{background:var(--s2)}
+.pick-item.selected{background:var(--blue-pale)}
+
+/* UPLOAD SPINNER */
+.upload-spin{
+  width:28px;height:28px;border-radius:50%;
+  border:3px solid rgba(255,255,255,.2);
+  border-top-color:#fff;
+  animation:spin .7s linear infinite;
+}
+@keyframes spin{to{transform:rotate(360deg)}}
+.pzone.uploading{background:#0c1a2e;border-color:var(--blue);cursor:wait}
+
+/* ═══════════════════════════════════════════
+   RESPONSIVE — iPad & Mobile
+═══════════════════════════════════════════ */
+
+/* iPad (768-1024px) */
+@media(max-width:1024px){
+  .cr-layout{grid-template-columns:240px 1fr}
+  .cr-left{position:static}
+  .bank-grid{grid-template-columns:repeat(auto-fill,minmax(220px,1fr))}
+  .stat-row{grid-template-columns:repeat(auto-fill,minmax(130px,1fr))}
+}
+
+/* iPad portrait + large phone landscape (600-768px) */
+@media(max-width:768px){
+  /* Topbar */
+  .tb-brand span{display:none} /* hide subtitle */
+  .tb-user{display:none}
+  .np{padding:4px 8px;font-size:11px}
+
+  /* Layout */
+  .wrap,.wrap-sm{padding:14px 12px}
+  .cr-layout{grid-template-columns:1fr}
+  .cr-left{position:static}
+  .adm-layout{grid-template-columns:1fr}
+
+  /* Exam shell: stack vertically */
+  .exam-2q-shell,.exam-meq-shell{
+    grid-template-columns:1fr;
+    height:auto;
+    min-height:100dvh;
+  }
+  .ex-l{
+    min-height:45dvh;
+    max-height:55dvh;
+  }
+  .ex-img{
+    min-height:180px;
+    max-height:38dvh;
+  }
+  .ex-r{
+    min-height:50dvh;
+    max-height:none;
+    flex:1;
+  }
+  .ex-ans-area{
+    max-height:calc(100dvh - 280px);
+    overflow-y:auto;
+    -webkit-overflow-scrolling:touch;
+  }
+
+  /* Dots smaller on mobile */
+  .dot{width:24px;height:24px;font-size:9px}
+  .ex-dots{padding:6px 10px;gap:4px}
+
+  /* Timer smaller */
+  .ex-tbar{padding:7px 10px;gap:7px}
+
+  /* Stat cards */
+  .stat-row{grid-template-columns:repeat(2,1fr)}
+  .sv{font-size:20px}
+
+  /* Tables scroll horizontally */
+  .tbl-wrap{overflow-x:auto;-webkit-overflow-scrolling:touch}
+  .tbl{min-width:480px}
+
+  /* Modal full-width */
+  .modal{max-width:100% !important;margin:8px;border-radius:12px}
+  .overlay{padding:4px}
+
+  /* Create layout: grid side by side in item card */
+  .q2-item-b .g2-img-q{grid-template-columns:1fr;gap:8px}
+}
+
+/* Phone portrait (max 600px) */
+@media(max-width:600px){
+  :root{font-size:14px}
+
+  /* Topbar compact */
+  .topbar{height:48px;padding:0 10px}
+  .np{padding:3px 7px;font-size:10px;border-radius:30px}
+
+  /* Pages */
+  .wrap,.wrap-sm{padding:10px 10px}
+  .pg-h{font-size:18px}
+  .pg-s{font-size:12px}
+
+  /* Stats: 2 col */
+  .stat-row{grid-template-columns:repeat(2,1fr);gap:7px}
+  .stat{padding:10px 12px}
+  .si{font-size:18px}.sv{font-size:18px}.sl{font-size:10px}
+
+  /* Exam shell */
+  .exam-2q-shell,.exam-meq-shell{
+    display:flex;
+    flex-direction:column;
+    height:auto;
+    min-height:100dvh;
+  }
+  .ex-l{
+    flex:0 0 auto;
+    min-height:42dvh;
+    max-height:50dvh;
+  }
+  .ex-l-hd{padding:7px 10px}
+  .ex-qnum{font-size:12px}
+  .ex-cap{font-size:11px;padding:6px 10px}
+  .ex-img{min-height:160px;padding:8px}
+  .ex-r{flex:1;display:flex;flex-direction:column}
+  .ex-tbar{padding:6px 10px;gap:6px}
+  .ex-ans-area{
+    flex:1;
+    overflow-y:auto;
+    padding:8px;
+    -webkit-overflow-scrolling:touch;
+    /* Extra space so keyboard doesn't cover textarea */
+    padding-bottom:env(safe-area-inset-bottom,16px);
+  }
+  .ex-ans-card{padding:8px}
+  .ex-ans-lbl{font-size:11px}
+  .ex-ans-card textarea{min-height:70px;font-size:13px}
+  .ex-dots{padding:5px 8px;gap:3px}
+  .dot{width:22px;height:22px;font-size:9px}
+
+  /* Tring (timer) smaller on phone */
+  .tring{width:56px !important;height:56px !important}
+  .tring svg{width:56px !important;height:56px !important}
+  .tr-txt{font-size:12px}
+
+  /* Small timer in left panel */
+  .tring.tr-sm{width:38px !important;height:38px !important}
+  .tring.tr-sm svg{width:38px !important;height:38px !important}
+  .tr-sm .tr-txt{font-size:10px}
+
+  /* Card */
+  .card-h{padding:10px 12px 8px;flex-wrap:wrap}
+  .card-b{padding:12px}
+
+  /* Brief card */
+  .brief-card{padding:18px 14px}
+  .brief-wrap{margin:16px auto;padding:0 8px}
+  .done-wrap{margin:30px auto;padding:0 8px}
+
+  /* Login box */
+  .login-box{padding:28px 20px;border-radius:16px}
+  .login-badge{font-size:14px}
+  .login-sub{font-size:12px}
+
+  /* Modals */
+  .modal{border-radius:10px;max-height:96dvh}
+  .modal-h{padding:12px 14px 10px}
+  .modal-b{padding:12px 14px}
+  .modal-f{padding:8px 14px 14px}
+  .overlay{padding:2px}
+
+  /* Admin sidebar — horizontal scroll */
+  .sidebar{display:flex;overflow-x:auto;-webkit-overflow-scrolling:touch;border-radius:var(--rsm)}
+  .sm-i{white-space:nowrap;border-bottom:none;border-right:1px solid var(--border);padding:9px 12px;font-size:12px}
+  .sm-i:last-child{border-right:none}
+
+  /* Create exam */
+  .pzone{min-height:120px}
+  .ph p{font-size:10px}
+
+  /* Table responsive */
+  .tbl th,.tbl td{padding:6px 8px;font-size:11px}
+
+  /* Briefing details */
+  #bf-detail div{font-size:11px}
+
+  /* Bank grid */
+  .bank-grid{grid-template-columns:1fr}
+
+  /* Buttons */
+  .btn-lg{padding:10px 18px;font-size:14px}
+}
+
+/* iOS safe area (notch/home bar) */
+@supports(padding-bottom:env(safe-area-inset-bottom)){
+  .topbar{padding-top:env(safe-area-inset-top,0)}
+  .ex-dots,.ex-tbar{padding-bottom:max(7px,env(safe-area-inset-bottom))}
+}
+
+/* Touch: larger tap targets */
+@media(pointer:coarse){
+  .btn{min-height:40px}
+  .np{min-height:34px}
+  .dot{width:30px;height:30px}
+  .sm-i{min-height:44px}
+  input,select,textarea{font-size:16px !important} /* prevent iOS zoom */
+}
+
+/* Landscape phone */
+@media(max-height:500px) and (orientation:landscape){
+  .exam-2q-shell,.exam-meq-shell{
+    grid-template-columns:1fr 1fr;
+    height:calc(100dvh - 48px);
+  }
+  .ex-l{max-height:none}
+  .ex-img{max-height:calc(100dvh - 160px)}
+  .ex-r{height:calc(100dvh - 48px);overflow:hidden}
+  .ex-ans-area{flex:1;overflow-y:auto}
+}
+</style>
+</head>
+<body>
+
+<!-- LOGIN -->
+<div class="page on" id="pg-login">
+  <div class="login-box">
+    <div style="text-align:center;margin-bottom:20px">
+      <div class="login-badge" style="flex-direction:column;gap:2px;padding:10px 20px;text-align:center"><span style="font-size:11px;letter-spacing:0;font-weight:500;opacity:.8">ระบบข้อสอบ</span><span>2Q &amp; MEQ</span></div>
+      <div class="login-sub">ระบบข้อสอบ 2 Questions และ Modified Essay Question<br><b style="color:var(--navy)">Dermatology UP</b><br><span style="font-size:11px">คณะแพทยศาสตร์ มหาวิทยาลัยพะเยา</span></div>
+    </div>
+    <div class="field"><label>Username</label><input type="text" id="l-u" autocomplete="username"></div>
+    <div class="field"><label>Password</label><input type="password" id="l-p" autocomplete="current-password"></div>
+    <button class="btn btn-navy btn-full btn-lg" style="margin-top:4px" onclick="doLogin()">เข้าสู่ระบบ</button>
+    <p class="err" id="l-err">ชื่อผู้ใช้หรือรหัสผ่านไม่ถูกต้อง</p>
+  </div>
+</div>
+
+<!-- TEACHER -->
+<div class="page" id="pg-teacher">
+  <div class="topbar">
+    <div class="tb-brand"><em>🏥</em> MEQ / 2Q</div>
+    <div class="tb-r">
+      <span class="tb-user" id="t-uname"></span>
+      <button class="np" onclick="showPage('pg-bank')">🗂️ คลัง</button>
+      <button class="np" onclick="showPage('pg-admin')" id="t-adm-btn" style="display:none">⚙️ Admin</button>
+      <button class="np red" onclick="logout()">ออก</button>
+    </div>
+  </div>
+  <div class="wrap">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;flex-wrap:wrap;gap:8px">
+      <div><div class="pg-h">📝 จัดการข้อสอบ</div><div class="pg-s">สร้างและจัดการชุดข้อสอบ MEQ และ 2Q</div></div>
+      <div style="display:flex;gap:6px;flex-wrap:wrap">
+        <button class="btn btn-purple" onclick="goCreate('2Q')">➕ ชุดข้อสอบ 2Q</button>
+        <button class="btn btn-navy" onclick="goCreate('MEQ')">➕ ชุดข้อสอบ MEQ</button>
+      </div>
+    </div>
+    <div class="stat-row" id="t-stats"></div>
+    <div class="card">
+      <div class="card-h">
+        <span class="card-t">📚 ชุดข้อสอบทั้งหมด</span>
+        <div style="display:flex;gap:6px">
+          <input type="text" id="t-q" placeholder="🔍 ค้นหา..." style="width:150px" oninput="renderTList()">
+          <select id="t-ft" style="width:85px" onchange="renderTList()"><option value="">ทั้งหมด</option><option value="MEQ">MEQ</option><option value="2Q">2Q</option></select>
+        </div>
+      </div>
+      <div id="t-list"></div>
+    </div>
+  </div>
+</div>
+
+<!-- CREATE EXAM -->
+<div class="page" id="pg-create">
+  <div class="topbar">
+    <div class="tb-brand"><em>✏️</em> <span id="cr-title" style="font-size:13px"></span></div>
+    <div class="tb-r">
+      <button class="np" onclick="showPage('pg-teacher')">← กลับ</button>
+      <button class="np" onclick="previewAS()">📄 กระดาษ</button>
+      <button class="np" style="background:rgba(26,111,212,.5)" onclick="saveExam()">💾 บันทึก</button>
+      <button class="np red" onclick="logout()">ออก</button>
+    </div>
+  </div>
+  <div class="wrap" style="padding-bottom:40px">
+    <div class="cr-layout">
+      <!-- LEFT -->
+      <div class="cr-left">
+        <div class="card">
+          <div class="card-h"><span class="card-t">📋 ข้อมูลชุดข้อสอบ</span><span class="badge" id="cr-badge"></span></div>
+          <div class="card-b">
+            <div class="field"><label>ชื่อชุดข้อสอบ <span class="req">*</span></label><input type="text" id="cr-name" placeholder="เช่น 2Q Midterm 2568"></div>
+            <div class="field" id="cr-2q-time-f" style="display:none">
+              <label>⏱️ เวลาต่อข้อ (วินาที) — ทุกข้อเท่ากัน</label>
+              <input type="number" id="cr-2q-shared-time" value="90" min="30" max="900">
+            </div>
+            <div class="field" id="cr-total-f" style="display:none"><label>เวลารวม MEQ (นาที)</label><input type="number" id="cr-total" value="60"></div>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-h"><span class="card-t">💡 Common Questions (EN)</span></div>
+          <div class="card-b" style="padding:10px">
+            <div style="font-size:10px;color:var(--txt2);margin-bottom:6px">Click to insert into focused textarea</div>
+            <div id="cq-list"></div>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-h"><span class="card-t">📂 ดึงข้อสอบเก่า</span></div>
+          <div class="card-b">
+            <button class="btn btn-ghost btn-full btn-sm" onclick="openPickModal()">🔍 เลือกข้อสอบจากคลัง</button>
+          </div>
+        </div>
+      </div>
+      <!-- RIGHT -->
+      <div>
+        <div id="cr-right"></div>
+        <div style="margin-top:10px;display:flex;gap:7px;flex-wrap:wrap">
+          <button class="btn btn-purple" id="cr-add-btn-2q" style="display:none" onclick="add2QItem()">➕ เพิ่มข้อสอบ 2Q</button>
+          <button class="btn btn-navy" id="cr-add-btn-meq" style="display:none" onclick="addMEQMajor()">➕ เพิ่มข้อใหญ่ MEQ</button>
+          <button class="btn btn-ghost btn-sm" id="cr-import-btn" style="display:none" onclick="document.getElementById('csv-import-input').click()">📥 Import CSV</button>
+          <input type="file" id="csv-import-input" accept=".csv" style="display:none" onchange="importCSV(event)">
+          <button class="btn btn-ghost btn-sm" id="cr-dl-tpl-btn" style="display:none" onclick="downloadTemplate()">📄 Template CSV</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- STUDENT SELECT -->
+<div class="page" id="pg-student">
+  <div class="topbar">
+    <div class="tb-brand"><em>🏥</em> MEQ / 2Q</div>
+    <div class="tb-r"><span class="tb-user" id="s-uname"></span><button class="np red" onclick="logout()">ออก</button></div>
+  </div>
+  <div class="wrap-sm">
+    <div class="pg-h">📋 เลือกชุดข้อสอบ</div>
+    <div class="pg-s" id="s-sub">ชุดข้อสอบที่ได้รับมอบหมาย</div>
+    <div style="display:flex;gap:7px;margin-bottom:11px">
+      <select id="s-tf" style="width:95px" onchange="renderSList()"><option value="">ทั้งหมด</option><option value="MEQ">MEQ</option><option value="2Q">2Q</option></select>
+      <input type="text" id="s-q" placeholder="🔍 ค้นหา..." style="flex:1" oninput="renderSList()">
+    </div>
+    <div id="s-list"></div>
+  </div>
+</div>
+
+<!-- BRIEFING -->
+<div class="page" id="pg-briefing">
+  <div class="topbar">
+    <div class="tb-brand"><em>📋</em> คำชี้แจง</div>
+    <div class="tb-r"><button class="np" onclick="showPage('pg-student')">← กลับ</button><button class="np red" onclick="logout()">ออก</button></div>
+  </div>
+  <div class="brief-wrap">
+    <div class="brief-card">
+      <div style="display:flex;align-items:center;gap:11px;margin-bottom:16px">
+        <div style="font-size:38px">📋</div>
+        <div><div style="font-size:18px;font-weight:800;color:var(--navy)" id="bf-name"></div>
+          <div style="font-size:12px;color:var(--txt2);margin-top:1px" id="bf-meta"></div></div>
+      </div>
+      <div class="al al-info" id="bf-info"></div>
+      <div style="background:var(--s2);border-radius:var(--rsm);padding:12px;margin-bottom:13px;border:1px solid var(--border)">
+        <div style="font-size:11px;font-weight:700;margin-bottom:7px" id="bf-detail-title"></div>
+        <div id="bf-detail"></div>
+      </div>
+      <div class="al al-warn">⚠️ เมื่อเริ่มสอบแล้ว ระบบนับเวลาถอยหลัง หมดเวลาข้อถัดไปทันที</div>
+      <button class="btn btn-blue btn-full btn-lg" style="margin-top:13px" onclick="startExam()">🚀 เริ่มทำข้อสอบ</button>
+    </div>
+  </div>
+</div>
+
+<!-- EXAM: 2Q -->
+<div class="page" id="pg-exam-2q">
+  <div class="topbar">
+    <div class="tb-brand"><em>📝</em><span id="ex2-name" style="font-size:12px;max-width:250px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap"></span></div>
+    <div class="tb-r"><span class="tb-user" id="ex2-stu"></span></div>
+  </div>
+  <div style="flex:1;display:flex;flex-direction:column">
+    <div class="exam-2q-shell">
+      <!-- LEFT: question stays, timer runs -->
+      <div class="ex-l">
+        <div class="ex-l-hd">
+          <div><div class="ex-qnum" id="ex2-qnum">ข้อที่ 1</div><div class="ex-prog" id="ex2-prog">1/5</div></div>
+          <div class="tring tr-sm" style="width:42px;height:42px">
+            <svg width="42" height="42" viewBox="0 0 42 42"><circle class="tr-bg" cx="21" cy="21" r="15" stroke-width="5"/><circle class="tr-fg" id="ex2-sm-arc" cx="21" cy="21" r="15" stroke-width="5" stroke-dasharray="94.2" stroke-dashoffset="0"/></svg>
+            <div class="tr-txt" id="ex2-sm-t">1:30</div>
+          </div>
+        </div>
+        <div class="ex-cap" id="ex2-cap"></div>
+        <div class="ex-img" id="ex2-img-area"><img id="ex2-img" style="display:none" alt="" referrerpolicy="no-referrer"><div class="ex-noimg" id="ex2-noimg">📋</div></div>
+      </div>
+      <!-- RIGHT: answer sheet, can switch with dots -->
+      <div class="ex-r">
+        <div class="ex-tbar">
+          <div class="tring" style="width:60px;height:60px">
+            <svg width="60" height="60" viewBox="0 0 60 60"><circle class="tr-bg" cx="30" cy="30" r="22" stroke-width="6"/><circle class="tr-fg" id="ex2-main-arc" cx="30" cy="30" r="22" stroke-width="6" stroke-dasharray="138.2" stroke-dashoffset="0"/></svg>
+            <div class="tr-txt" id="ex2-main-t">1:30</div>
+          </div>
+          <div style="flex:1"><div style="font-size:11px;font-weight:700;color:var(--navy)">เวลาที่เหลือ</div><div style="font-size:10px;color:var(--txt2)">กระดาษคำตอบ ข้อ <b id="ex2-ans-qnum">1</b></div></div>
+          <div style="text-align:right"><div style="font-size:10px;color:var(--txt2)">กำลังสอบ</div><div style="font-size:19px;font-weight:800;color:var(--navy)" id="ex2-qr">1</div></div>
+        </div>
+        <div class="ex-ans-area" id="ex2-ans"></div>
+        <div class="ex-dots" id="ex2-dots"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- EXAM: MEQ -->
+<div class="page" id="pg-exam-meq">
+  <div class="topbar">
+    <div class="tb-brand"><em>📝</em><span id="exm-name" style="font-size:12px;max-width:250px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap"></span></div>
+    <div class="tb-r"><span class="tb-user" id="exm-stu"></span></div>
+  </div>
+  <div style="flex:1;display:flex;flex-direction:column">
+    <div class="exam-meq-shell">
+      <div class="ex-l">
+        <div class="ex-l-hd">
+          <div><div class="ex-qnum" id="exm-qnum">ข้อใหญ่ 1.1</div><div class="ex-prog" id="exm-prog">1/10</div></div>
+          <div class="tring tr-sm" style="width:42px;height:42px">
+            <svg width="42" height="42" viewBox="0 0 42 42"><circle class="tr-bg" cx="21" cy="21" r="15" stroke-width="5"/><circle class="tr-fg" id="exm-sm-arc" cx="21" cy="21" r="15" stroke-width="5" stroke-dasharray="94.2" stroke-dashoffset="0"/></svg>
+            <div class="tr-txt" id="exm-sm-t">1:30</div>
+          </div>
+        </div>
+        <div class="ex-cap" id="exm-cap"></div>
+        <div class="ex-img" id="exm-img-area"><img id="exm-img" style="display:none" alt="" referrerpolicy="no-referrer"><div class="ex-noimg" id="exm-noimg">📋</div></div>
+      </div>
+      <div class="ex-r">
+        <div class="ex-tbar">
+          <div class="tring" style="width:60px;height:60px">
+            <svg width="60" height="60" viewBox="0 0 60 60"><circle class="tr-bg" cx="30" cy="30" r="22" stroke-width="6"/><circle class="tr-fg" id="exm-main-arc" cx="30" cy="30" r="22" stroke-width="6" stroke-dasharray="138.2" stroke-dashoffset="0"/></svg>
+            <div class="tr-txt" id="exm-main-t">1:30</div>
+          </div>
+          <div style="flex:1"><div style="font-size:11px;font-weight:700;color:var(--navy)">เวลาที่เหลือ</div><div style="font-size:10px;color:var(--txt2)" id="exm-tnote"></div></div>
+          <div style="text-align:right"><div style="font-size:10px;color:var(--txt2)">ข้อย่อย</div><div style="font-size:19px;font-weight:800;color:var(--navy)" id="exm-qr">1</div></div>
+        </div>
+        <div class="ex-ans-area" id="exm-ans"></div>
+        <div class="ex-dots" id="exm-dots"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- DONE -->
+<div class="page" id="pg-done">
+  <div class="topbar">
+    <div class="tb-brand"><em>🏥</em> MEQ / 2Q</div>
+    <div class="tb-r"><button class="np red" onclick="logout()">ออกจากระบบ</button></div>
+  </div>
+  <div class="done-wrap">
+    <div class="brief-card">
+      <div style="font-size:52px;margin-bottom:11px">✅</div>
+      <div style="font-size:21px;font-weight:800;color:var(--navy);margin-bottom:5px">ส่งข้อสอบเรียบร้อย</div>
+      <div style="color:var(--txt2);font-size:13px" id="done-sub"></div>
+    </div>
+  </div>
+</div>
+
+<!-- ADMIN -->
+<div class="page" id="pg-admin">
+  <div class="topbar">
+    <div class="tb-brand"><em>⚙️</em> Admin</div>
+    <div class="tb-r"><button class="np" onclick="showPage('pg-teacher')">← กลับ</button><button class="np red" onclick="logout()">ออก</button></div>
+  </div>
+  <div class="wrap">
+    <div class="pg-h">⚙️ Admin</div><div class="pg-s">จัดการระบบและผู้ใช้</div>
+    <div class="adm-layout">
+      <div><div class="sidebar">
+        <div class="sm-i on" onclick="admTab('users',this)">👥 ผู้ใช้</div>
+        <div class="sm-i" onclick="admTab('assign',this)">📌 มอบหมาย</div>
+        <div class="sm-i" onclick="admTab('answers',this)">📝 ผลสอบ</div>
+        <div class="sm-i" onclick="admTab('gsheet',this)">📊 Google Sheets</div>
+        <div class="sm-i" onclick="admTab('stats',this)">📈 สถิติ</div>
+      </div></div>
+      <div>
+        <div class="adm-sec on" id="adm-users"><div class="card"><div class="card-h"><span class="card-t">👥 ผู้ใช้งาน</span><button class="btn btn-blue btn-sm" onclick="openAddUser()">➕</button></div><div id="adm-ulist"></div></div></div>
+        <div class="adm-sec" id="adm-assign"><div class="card"><div class="card-h"><span class="card-t">📌 มอบหมายข้อสอบ</span></div><div class="card-b">
+          <div class="al al-info">เลือกชุดข้อสอบ แล้วเลือกนักเรียนที่จะให้เข้าสอบ</div>
+          <div class="field"><label>ชุดข้อสอบ</label><select id="asgn-exam" onchange="renderAsgn()"><option value="">-- เลือก --</option></select></div>
+          <div id="asgn-stu-wrap" style="display:none">
+            <div class="field"><label>นักเรียน</label><div id="asgn-stu" style="border:1px solid var(--border);border-radius:var(--rsm);max-height:200px;overflow-y:auto;padding:6px"></div></div>
+            <div style="display:flex;gap:6px;margin-top:6px">
+              <button class="btn btn-ghost btn-sm" onclick="aAll(true)">เลือกทั้งหมด</button>
+              <button class="btn btn-ghost btn-sm" onclick="aAll(false)">ยกเลิก</button>
+              <button class="btn btn-blue btn-sm" style="margin-left:auto" onclick="saveAsgn()">💾 บันทึก</button>
+            </div>
+          </div>
+        </div></div></div>
+        <div class="adm-sec" id="adm-answers"><div class="card"><div class="card-h"><span class="card-t">📝 ผลการสอบ</span><button class="btn btn-blue btn-sm" onclick="printAll()">🖨️ พิมพ์ทั้งหมด</button></div><div class="tbl-wrap" id="adm-alist"></div></div></div>
+        <div class="adm-sec" id="adm-gsheet"><div class="card"><div class="card-h"><span class="card-t">📊 Google Sheets</span></div><div class="card-b">
+          <div class="al al-green" style="margin-bottom:10px">🟢 เชื่อมต่อ Google Sheets แล้ว (URL ฝังในระบบ)</div>
+<div class="field"><label>Web App URL (แก้ไขได้)</label><input type="text" id="gs-url" placeholder="https://script.google.com/macros/s/..."></div>
+          <div style="display:flex;gap:7px"><button class="btn btn-blue" onclick="saveGS()">💾 บันทึก</button><button class="btn btn-ghost" onclick="testGS()">🧪 ทดสอบ</button></div>
+        </div></div></div>
+        <div class="adm-sec" id="adm-stats"><div class="stat-row" id="adm-sg"></div><div class="card"><div class="card-h"><span class="card-t">📈 สถิติ</span></div><div id="adm-sb" class="card-b"></div></div></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- BANK -->
+<div class="page" id="pg-bank">
+  <div class="topbar">
+    <div class="tb-brand"><em>🗂️</em> คลังข้อสอบ</div>
+    <div class="tb-r"><button class="np" onclick="showPage('pg-teacher')">← กลับ</button><button class="np red" onclick="logout()">ออก</button></div>
+  </div>
+  <div class="wrap">
+    <div class="pg-h">🗂️ คลังข้อสอบ</div><div class="pg-s">รวมชุดข้อสอบทั้งหมด</div>
+    <div style="display:flex;gap:7px;margin-bottom:12px;flex-wrap:wrap">
+      <select id="bk-tf" style="width:95px" onchange="renderBank()"><option value="">ทั้งหมด</option><option value="MEQ">MEQ</option><option value="2Q">2Q</option></select>
+      <input type="text" id="bk-q" placeholder="🔍 ค้นหา..." style="flex:1;min-width:120px" oninput="renderBank()">
+    </div>
+    <div class="bank-grid" id="bk-grid"></div>
+  </div>
+</div>
+
+<!-- MODALS -->
+<div class="overlay" id="m-as"><div class="modal"><div class="modal-h"><span class="modal-t">📄 กระดาษคำตอบ</span><button class="modal-x" onclick="closeM('m-as')">✕</button></div><div class="modal-b" id="m-as-b"></div><div class="modal-f"><button class="btn btn-ghost" onclick="closeM('m-as')">ปิด</button><button class="btn btn-blue" onclick="window.print()">🖨️ พิมพ์</button></div></div></div>
+<div class="overlay" id="m-detail"><div class="modal" style="max-width:600px"><div class="modal-h"><span class="modal-t" id="md-t"></span><button class="modal-x" onclick="closeM('m-detail')">✕</button></div><div class="modal-b" id="md-b"></div><div class="modal-f"><button class="btn btn-ghost" onclick="closeM('m-detail')">ปิด</button><button class="btn btn-ghost" id="md-edit">✏️ แก้ไข</button><button class="btn btn-red btn-sm" id="md-del">🗑️ ลบ</button></div></div></div>
+<div class="overlay" id="m-user">
+  <div class="modal" style="max-width:440px">
+    <div class="modal-h">
+      <span class="modal-t" id="m-user-title">➕ เพิ่มผู้ใช้งาน</span>
+      <button class="modal-x" onclick="closeM('m-user')">✕</button>
+    </div>
+    <div class="modal-b">
+      <input type="hidden" id="nu-edit-mode" value="">
+      <div class="g2">
+        <div class="field"><label>Username <span class="req">*</span></label>
+          <input type="text" id="nu-u" placeholder="username" autocomplete="off"></div>
+        <div class="field"><label>บทบาท</label>
+          <select id="nu-r">
+            <option value="student">🎓 นักเรียน</option>
+            <option value="teacher">👨‍🏫 อาจารย์</option>
+            <option value="admin">🛡️ Admin</option>
+          </select></div>
+      </div>
+      <div class="field"><label>ชื่อ-นามสกุล</label>
+        <input type="text" id="nu-n" placeholder="ชื่อ นามสกุล"></div>
+      <div class="field" id="nu-pass-wrap">
+        <label>Password <span class="req" id="nu-pass-req">*</span></label>
+        <input type="password" id="nu-p" placeholder="password" autocomplete="new-password">
+      </div>
+    </div>
+    <div class="modal-f">
+      <button class="btn btn-ghost" onclick="closeM('m-user')">ยกเลิก</button>
+      <button class="btn btn-blue" onclick="saveUser()">💾 บันทึก</button>
+    </div>
+  </div>
+</div>
+<div class="overlay" id="m-av"><div class="modal" style="max-width:640px"><div class="modal-h"><span class="modal-t" id="av-t"></span><button class="modal-x" onclick="closeM('m-av')">✕</button></div><div class="modal-b" id="av-b"></div><div class="modal-f"><button class="btn btn-ghost" onclick="closeM('m-av')">ปิด</button><button class="btn btn-blue" onclick="printOne()">🖨️ พิมพ์</button></div></div></div>
+<div class="overlay" id="m-pick"><div class="modal" style="max-width:640px"><div class="modal-h"><span class="modal-t" id="pick-t">เลือกข้อสอบจากคลัง</span><button class="modal-x" onclick="closeM('m-pick')">✕</button></div><div class="modal-b" id="pick-b"></div><div class="modal-f"><button class="btn btn-ghost" onclick="closeM('m-pick')">ยกเลิก</button><button class="btn btn-blue" onclick="confirmPick()">✅ นำมาใช้</button></div></div></div>
+
+<div class="print-area" id="print-area"></div>
+
+<script>
+/* ══════════════ CONSTANTS ══════════════ */
+const COMMON_QS_EN=[
+  'What is the most likely diagnosis? Give reasons.',
+  'List at least 3 differential diagnoses.',
+  'What investigations/labs would you order?',
+  'Describe the relevant physical examination findings.',
+  'Outline the initial management/treatment plan.',
+  'What is the drug of choice and dosage?',
+  'What complications should be anticipated?',
+  'Describe the pathophysiology of this condition.',
+  'What are the risk factors for this disease?',
+  'What is the prognosis for this patient?',
+  'Which specialist should this patient be referred to?',
+  'What patient education would you provide?',
+  'Write a prescription for this patient.',
+  'State the criteria for hospital admission.',
+  'What follow-up plan would you recommend?',
+];
+
+const DEFAULT_USERS=[
+  {username:'admin',password:'admin1234',role:'admin',name:'ผู้ดูแลระบบ'},
+  {username:'wasuchon.ch',password:'1234',role:'teacher',name:'อ.วาสุชน ช.'},
+  {username:'student1',password:'1234',role:'student',name:'นายสมชาย ใจดี'},
+  {username:'student2',password:'1234',role:'student',name:'นางสาวมาลี รักเรียน'},
+  {username:'student3',password:'1234',role:'student',name:'นายวิชัย ขยัน'},
+];
+
+/* ══════════════ HELPERS ══════════════ */
+const $=id=>document.getElementById(id);
+const gs=k=>{try{return JSON.parse(localStorage.getItem('meq_'+k)||'null')}catch{return null}};
+const ss=(k,v)=>localStorage.setItem('meq_'+k,JSON.stringify(v));
+const genId=()=>Date.now().toString(36)+Math.random().toString(36).slice(2,7);
+const fmtD=d=>d?new Date(d).toLocaleString('th-TH',{year:'numeric',month:'short',day:'numeric',hour:'2-digit',minute:'2-digit'}):'-';
+const deepCopy=o=>JSON.parse(JSON.stringify(o));
+const getUsers=()=>JSON.parse(localStorage.getItem('meq_users')||'null')||DEFAULT_USERS;
+const setUsers=u=>localStorage.setItem('meq_users',JSON.stringify(u));
+const getExams=()=>gs('exams')||[];
+const getAnswers=()=>gs('answers')||[];
+const getAssign=()=>gs('assign')||{};
+const setAssign=a=>ss('assign',a);
+const _GS_URL='https://script.google.com/macros/s/AKfycbyqOWVSAiVgpHdnGZwlFJKB8sKhk9cyYYt787hzjVuxb0FuSfGx5sFR5hQo-g8FH__Hqg/exec';
+async function gSync(sheet,data){
+  const url=localStorage.getItem('meq_gs')||_GS_URL;
+  if(!url)return;
+  try{
+    await fetch(url,{method:'POST',mode:'no-cors',body:JSON.stringify({sheet,data,ts:Date.now()})});
+  }catch(e){console.warn('gSync error:',e);}
+}
+
+/* ══════════════ SAMPLES ══════════════ */
+function mkImg(title,lines,g1,g2){
+  const c=document.createElement('canvas');c.width=660;c.height=420;
+  const ctx=c.getContext('2d');
+  const gr=ctx.createLinearGradient(0,0,660,420);gr.addColorStop(0,g1);gr.addColorStop(1,g2);
+  ctx.fillStyle=gr;ctx.fillRect(0,0,660,420);
+  ctx.strokeStyle='rgba(255,255,255,.05)';ctx.lineWidth=1;
+  for(let x=0;x<660;x+=33){ctx.beginPath();ctx.moveTo(x,0);ctx.lineTo(x,420);ctx.stroke()}
+  for(let y=0;y<420;y+=33){ctx.beginPath();ctx.moveTo(0,y);ctx.lineTo(660,y);ctx.stroke()}
+  ctx.fillStyle='rgba(255,255,255,.07)';ctx.fillRect(0,0,660,58);
+  ctx.fillStyle='rgba(255,255,255,.9)';ctx.font='bold 18px Sarabun,sans-serif';ctx.textAlign='center';
+  ctx.fillText('🏥  '+title,330,38);
+  ctx.textAlign='left';let y=78;
+  (lines||[]).forEach(ln=>{
+    if(ln.startsWith('##')){ctx.fillStyle='rgba(255,220,80,.95)';ctx.font='bold 13px Sarabun,sans-serif';ctx.fillText(ln.slice(2).trim(),40,y);}
+    else{ctx.fillStyle='rgba(255,255,255,.8)';ctx.font='13px Sarabun,sans-serif';ctx.fillText(ln,52,y);}
+    y+=24;if(y>400)return;
+  });
+  ctx.fillStyle='rgba(255,255,255,.28)';ctx.font='11px Sarabun,sans-serif';ctx.textAlign='center';
+  ctx.fillText('คณะแพทยศาสตร์ มหาวิทยาลัยพะเยา',330,406);
+  return c.toDataURL('image/png');
+}
+
+function initSamples(){
+  if(getExams().length>0)return;
+  const exams=[];
+
+  // 2Q Midterm — 4 items, each different disease, each different questions
+  exams.push({
+    id:genId(),type:'2Q',name:'2Q Midterm 2568',
+    createdBy:'wasuchon.ch',createdAt:new Date(Date.now()-86400000*3).toISOString(),usedDates:[],
+    items:[
+      {id:genId(),timePerQ:90,dataUrl:mkImg('2Q ข้อ 1 — Psoriasis',['## Patient','Male, 35y, silvery scale plaques x3yr','Elbows, knees, scalp involvement','## Exam','Auspitz sign: Positive','PASI score = 12 (Moderate-Severe)'],'#1a3a2a','#2d6a4f'),
+        caption:'Erythematous plaques with silvery scales',disease:'Psoriasis',
+        questions:['What is the most likely diagnosis? Give reasons.','List at least 3 differential diagnoses.','Outline the treatment plan.']},
+      {id:genId(),timePerQ:90,dataUrl:mkImg('2Q ข้อ 2 — DM Type 2',['## Patient','Female, 58y, T2DM x10yr','## Complaints','Bilateral foot numbness, blurred vision','## Labs','FBS 245, HbA1c 9.8%','Cr 1.8, eGFR 38 mL/min'],'#1a2a3a','#2d4a6a'),
+        caption:'T2DM with poor glycemic control and complications',disease:'Diabetes Mellitus T2',
+        questions:['List all diabetic complications found.','What investigations would you order?','What is the management plan?']},
+      {id:genId(),timePerQ:90,dataUrl:mkImg('2Q ข้อ 3 — Acute Appendicitis',['## Patient','Male, 28y, RLQ pain x6hr','## PE','Rebound tenderness, Rovsing sign +','Temp 38.5°C','## Lab','WBC 15,200 (N 82%), CRP 85','US: Appendix 9mm, non-compressible'],'#3a2a1a','#7a5a30'),
+        caption:'Alvarado score = 9',disease:'Acute Appendicitis',
+        questions:['Diagnose and justify.','What imaging/labs are needed?','Outline the surgical management.']},
+      {id:genId(),timePerQ:90,dataUrl:mkImg('2Q ข้อ 4 — Heart Failure',['## Patient','Male, 65y, DOE + orthopnea x2wk','## PE','BP 160/100, HR 110, RR 26','Bilateral crackles, JVP ↑','Pitting edema +++','## CXR: Cardiomegaly + pulmonary congestion'],'#1a1a3a','#2d2d6a'),
+        caption:'Decompensated heart failure',disease:'Congestive Heart Failure',
+        questions:['Diagnose and classify (NYHA).','What investigations would you order?','What is the acute and long-term management?']},
+    ]
+  });
+
+  // MEQ Psoriasis — 5 major questions, each with sub-questions (each sub has own time+image)
+  exams.push({
+    id:genId(),type:'MEQ',name:'MEQ — Psoriasis Set A',
+    createdBy:'wasuchon.ch',createdAt:new Date(Date.now()-86400000*5).toISOString(),usedDates:[],
+    items:[
+      {id:genId(),disease:'Psoriasis vulgaris',subQuestions:[
+        {id:genId(),timePerQ:90,question:'What is the most likely diagnosis? Give supporting evidence.',dataUrl:mkImg('MEQ 1.1 — History',['## Patient','Male, 35y, erythematous plaques x3yr','## Location','Elbows, knees, scalp','## Features','Silvery scales, Auspitz sign +','PASI = 12'],'#1a3a2a','#2d6a4f'),caption:'History & physical examination findings'},
+        {id:genId(),timePerQ:60,question:'List 3 differential diagnoses with distinguishing features.',dataUrl:'',caption:''},
+      ]},
+      {id:genId(),disease:'Psoriasis vulgaris',subQuestions:[
+        {id:genId(),timePerQ:60,question:'What laboratory investigations would you order and why?',dataUrl:mkImg('MEQ 2.1 — Lab Results',['## CBC','WBC 8200, Hb 13.5, Plt 245,000','## LFT: Normal','## Immunology','RF: Neg, ANA: Neg','## CRP: 12 mg/L'],'#1a2a3a','#2d4a6a'),caption:'Lab results'},
+        {id:genId(),timePerQ:90,question:'Interpret the skin biopsy: Parakeratosis, Munro microabscesses, elongated rete ridges.',dataUrl:'',caption:''},
+      ]},
+      {id:genId(),disease:'Psoriasis vulgaris',subQuestions:[
+        {id:genId(),timePerQ:90,question:'Outline the stepwise treatment approach for this patient.',dataUrl:mkImg('MEQ 3.1 — Treatment Plan',['## Topical Therapy','Calcipotriol + Betamethasone','## Systemic Therapy','Methotrexate 15mg/week','Folic acid 5mg/week','## Phototherapy','NB-UVB (if available)'],'#2a1a3a','#4a2d6a'),caption:'Treatment options'},
+        {id:genId(),timePerQ:90,question:'What side effects of Methotrexate must be monitored?',dataUrl:'',caption:''},
+        {id:genId(),timePerQ:60,question:'What are the criteria to escalate to Biologic therapy?',dataUrl:'',caption:''},
+      ]},
+      {id:genId(),disease:'Psoriasis vulgaris',subQuestions:[
+        {id:genId(),timePerQ:90,question:'After 3 months: PASI dropped to 4, LFT normal. Assess treatment response.',dataUrl:mkImg('MEQ 4.1 — Follow Up 3M',['## After 3 Months','PASI score: 12 → 4 (Mild)','LFT: Still normal','Patient satisfaction: Good','## Compliance','Taking MTX regularly','Applying topicals correctly'],'#3a2a1a','#6a4a2d'),caption:'3-month follow-up results'},
+        {id:genId(),timePerQ:60,question:'What patient education would you provide at this stage?',dataUrl:'',caption:''},
+      ]},
+      {id:genId(),disease:'Psoriatic Arthritis',subQuestions:[
+        {id:genId(),timePerQ:90,question:'6 months later: swollen finger joints, morning stiffness >1hr. Diagnose and justify.',dataUrl:mkImg('MEQ 5.1 — Complication',['## New Complaints (6 months later)','Swollen PIP/DIP joints bilaterally','Morning stiffness >1 hour','## X-ray','Pencil-in-cup deformity','Erosive changes at DIP joints','## Diagnosis?'],'#3a1a1a','#6a2d2d'),caption:'New complication — Psoriatic Arthritis'},
+        {id:genId(),timePerQ:90,question:'How would you modify the treatment plan for Psoriatic Arthritis?',dataUrl:'',caption:''},
+      ]},
+    ]
+  });
+
+  ss('exams',exams);
+}
+
+/* ══════════════ ROUTING ══════════════ */
+let ME=null;
+
+function showPage(id){
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('on'));
+  $(id).classList.add('on');
+  window.scrollTo(0,0);
+  if(id==='pg-teacher'){renderTStats();renderTList();}
+  if(id==='pg-student'){renderSList();}
+  if(id==='pg-bank'){renderBank();}
+  if(id==='pg-admin'){renderAdmUsers();}
+}
+
+/* ══════════════ AUTH ══════════════ */
+function doLogin(){
+  const u=$('l-u').value.trim(),p=$('l-p').value.trim();
+  const found=getUsers().find(x=>x.username===u&&x.password===p);
+  $('l-err').style.display='none';
+  if(!found){$('l-err').style.display='block';return;}
+  ME=found;
+  if(found.role==='student'){$('s-uname').textContent=found.name;showPage('pg-student');}
+  else{$('t-uname').textContent=found.name;$('t-adm-btn').style.display=found.role==='admin'?'':'none';showPage('pg-teacher');}
+}
+function logout(){ME=null;$('l-u').value='';$('l-p').value='';showPage('pg-login');}
+document.addEventListener('keydown',e=>{if(e.key==='Enter'&&$('pg-login').classList.contains('on'))doLogin();});
+
+/* ══════════════ TEACHER LIST ══════════════ */
+function renderTStats(){
+  if(!ME)return;
+  const all=getExams().filter(e=>e.createdBy===ME.username||ME.role==='admin');
+  $('t-stats').innerHTML=`
+    <div class="stat"><div class="si">📋</div><div><div class="sv">${all.length}</div><div class="sl">ชุดข้อสอบ</div></div></div>
+    <div class="stat"><div class="si">🔵</div><div><div class="sv">${all.filter(e=>e.type==='MEQ').length}</div><div class="sl">MEQ</div></div></div>
+    <div class="stat"><div class="si">🟣</div><div><div class="sv">${all.filter(e=>e.type==='2Q').length}</div><div class="sl">2Q</div></div></div>
+    <div class="stat"><div class="si">📝</div><div><div class="sv">${getAnswers().length}</div><div class="sl">ผลสอบ</div></div></div>`;
+}
+function renderTList(){
+  if(!ME)return;
+  const s=$('t-q').value.toLowerCase(),f=$('t-ft').value;
+  const list=getExams().filter(e=>(e.createdBy===ME.username||ME.role==='admin')&&(!f||e.type===f)&&(!s||e.name.toLowerCase().includes(s))).sort((a,b)=>new Date(b.createdAt)-new Date(a.createdAt));
+  const el=$('t-list');
+  if(!list.length){el.innerHTML='<div class="empty"><div class="ei">📋</div><p>ยังไม่มีชุดข้อสอบ</p></div>';return;}
+  el.innerHTML=list.map(e=>`
+    <div class="exam-row" onclick="showDetail('${e.id}')">
+      <div class="etype ${e.type==='MEQ'?'et-meq':'et-2q'}">${e.type}</div>
+      <div style="flex:1"><div style="font-weight:700;font-size:13px">${e.name}</div>
+        <div style="font-size:11px;color:var(--txt2);margin-top:1px">${(e.items||[]).length} ${e.type==='MEQ'?'ข้อใหญ่':'ข้อ'} · ${fmtD(e.createdAt)}</div></div>
+      <span class="badge b-gray">${getAnswers().filter(a=>a.examId===e.id).length} ผล</span>
+    </div>`).join('');
+}
+
+/* ══════════════ CREATE EXAM ══════════════ */
+let crType='2Q',crItems=[],crEditId=null,_lastTA=null,crActiveImgIdx=0;
+
+/* init common questions */
+function initCQ(){
+  $('cq-list').innerHTML=COMMON_QS_EN.map(q=>`<span class="cq-pill" onclick="insertCQ(this,'${q.replace(/'/g,"\\'")}')">${q}</span>`).join('');
+}
+function insertCQ(el,q){
+  if(_lastTA&&$('pg-create').classList.contains('on')){
+    const ta=_lastTA,s=ta.selectionStart||ta.value.length;
+    const before=ta.value.slice(0,s),after=ta.value.slice(s);
+    ta.value=before+(before&&!before.endsWith('\n')?'\n':'')+q+(after&&!after.startsWith('\n')?'\n':'')+after;
+    ta.focus();ta.dispatchEvent(new Event('input'));
+  } else {
+    navigator.clipboard?.writeText(q).catch(()=>{});
+    el.style.background='var(--green-pale)';setTimeout(()=>el.style.background='',600);
+  }
+}
+document.addEventListener('focusin',e=>{if(e.target.tagName==='TEXTAREA'&&$('pg-create').classList.contains('on'))_lastTA=e.target;});
+
+function goCreate(type,editId){
+  crType=type;crEditId=editId||null;crActiveImgIdx=0;_lastTA=null;
+  if(editId){
+    const e=getExams().find(x=>x.id===editId);if(!e)return;
+    crItems=deepCopy(e.items||[]);
+    $('cr-name').value=e.name;$('cr-total').value=e.totalTime||60;
+  } else {
+    crItems=[];$('cr-name').value='';$('cr-total').value='60';
+  }
+  $('cr-title').textContent=(editId?'แก้ไข':'สร้าง')+' '+type;
+  $('cr-badge').textContent=type;$('cr-badge').className='badge '+(type==='MEQ'?'b-blue':'b-purple');
+  $('cr-total-f').style.display=type==='MEQ'?'block':'none';
+  $('cr-2q-time-f').style.display=type==='2Q'?'block':'none';
+  $('cr-add-btn-2q').style.display=type==='2Q'?'flex':'none';
+  $('cr-add-btn-meq').style.display=type==='MEQ'?'flex':'none';
+  $('cr-import-btn').style.display='flex';
+  $('cr-dl-tpl-btn').style.display='flex';
+  if(editId&&type==='2Q'){const e=getExams().find(x=>x.id===editId);if(e?.items?.[0]?.timePerQ&&$('cr-2q-shared-time'))$('cr-2q-shared-time').value=e.items[0].timePerQ;}
+  initCQ();setupPaste();renderCrRight();
+  showPage('pg-create');
+}
+
+/* ── RENDER RIGHT PANEL ── */
+function renderCrRight(){
+  const el=$('cr-right');
+  if(!crItems.length){
+    el.innerHTML=`<div class="card"><div class="card-b"><div class="empty"><div class="ei">${crType==='2Q'?'🟣':'🔵'}</div><p>กด "เพิ่มข้อสอบ" เพื่อเริ่มสร้าง</p></div></div></div>`;
+    return;
+  }
+  el.innerHTML=crItems.map((item,idx)=>crType==='2Q'?build2QItemHTML(item,idx):buildMEQItemHTML(item,idx)).join('');
+}
+
+/* ── 2Q ITEM ── */
+function build2QItemHTML(item,idx){
+  // Use unique file id: pfi2q-{idx}
+  const fileId=`pfi2q-${idx}`;
+  const pz=item.dataUrl
+    ? `<div class="pzone filled" id="pz2q-${idx}" onmouseenter="crActivePZ='2q:${idx}'">
+        <img src="${item.dataUrl}" alt="" style="width:100%;max-height:220px;object-fit:contain;display:block;border-radius:10px" referrerpolicy="no-referrer">
+        <div class="pzone-btns">
+          <button onclick="event.stopPropagation();clear2QImg(${idx})">🗑️ ลบ</button>
+          <button onclick="event.stopPropagation();document.getElementById('${fileId}').click()">☁️ เปลี่ยน</button>
+        </div>
+        <div style="position:absolute;bottom:4px;left:5px;font-size:9px;background:rgba(26,111,212,.85);color:#fff;padding:1px 6px;border-radius:3px;pointer-events:none">☁️ Drive</div>
+        <input type="file" id="${fileId}" accept="image/*" style="display:none" onchange="load2QImg(event,${idx})">
+      </div>`
+    : `<div class="pzone" id="pz2q-${idx}" onmouseenter="crActivePZ='2q:${idx}'"
+        ondragover="event.preventDefault();this.classList.add('drag')"
+        ondragleave="this.classList.remove('drag')"
+        ondrop="drop2QImg(event,${idx})"
+        onclick="document.getElementById('${fileId}').click()">
+        <div class="ph"><div class="pi">☁️</div><p><b>คลิก</b> เลือกไฟล์<br><b>Ctrl+V</b> วางจาก clipboard<br><b>ลากไฟล์</b> มาวาง<br><small style='opacity:.6'>Upload ไป Google Drive</small></p></div>
+        <input type="file" id="${fileId}" accept="image/*" style="display:none" onchange="load2QImg(event,${idx})">
+      </div>`;
+  const qs=(item.questions||['']).map((q,qi)=>`
+    <div style="display:flex;gap:6px;align-items:flex-start;margin-bottom:6px">
+      <div style="background:var(--purple);color:#fff;width:20px;height:20px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:700;flex-shrink:0;margin-top:3px">${qi+1}</div>
+      <textarea id="q2_${idx}_${qi}" style="flex:1;min-height:90px;font-size:13px" placeholder="Question ${qi+1}...">${q}</textarea>
+      <button class="btn btn-red btn-sm" onclick="del2QQ(${idx},${qi})" style="margin-top:2px">✕</button>
+    </div>`).join('');
+  return `<div class="q2-item" id="cr-item-${idx}" style="margin-bottom:10px">
+    <div class="q2-item-h">
+      <span>ข้อ ${idx+1}${item.disease?` — ${item.disease}`:''}</span>
+      <div style="display:flex;gap:5px;align-items:center">
+        <button onclick="save2QItem(${idx})" style="background:rgba(26,111,212,.7);border:none;color:#fff;border-radius:4px;padding:2px 9px;cursor:pointer;font-size:11px;font-family:'Sarabun',sans-serif">💾 บันทึกข้อนี้</button>
+        <button onclick="delItem(${idx})" style="background:rgba(192,57,43,.7);border:none;color:#fff;border-radius:4px;padding:2px 7px;cursor:pointer;font-size:11px;font-family:'Sarabun',sans-serif">✕</button>
+      </div>
+    </div>
+    <div class="q2-item-b">
+      <div style="display:grid;grid-template-columns:210px 1fr;gap:11px">
+        <div>
+          ${pz}
+          <div class="field" style="margin-top:7px"><label>ชื่อโรค / Tag</label><input type="text" id="cr-dis-${idx}" value="${item.disease||''}" placeholder="เช่น Psoriasis" style="font-size:12px"></div>
+          <div class="field"><label>ข้อความโจทย์</label><textarea id="cr-cap-${idx}" style="min-height:100px;font-size:13px" placeholder="ข้อความโจทย์...">${item.caption||''}</textarea></div>
+        </div>
+        <div>
+          <div style="font-size:11px;font-weight:700;color:var(--navy);margin-bottom:7px">คำถาม</div>
+          ${qs}
+          <button class="btn btn-ghost btn-sm" onclick="add2QQ(${idx})">➕ เพิ่มคำถาม</button>
+        </div>
+      </div>
+    </div>
+  </div>`;
+}
+
+/* ── MEQ MAJOR ITEM ── */
+function buildMEQItemHTML(item,idx){
+  const subs=(item.subQuestions||[]).map((sq,qi)=>buildMEQSubHTML(idx,qi,sq)).join('');
+  return `<div class="meq-major" id="cr-item-${idx}" style="margin-bottom:12px">
+    <div class="meq-major-h">
+      <span>ข้อใหญ่ ${idx+1}${item.disease?` — ${item.disease}`:''}</span>
+      <div style="display:flex;gap:5px">
+        <button onclick="saveMEQMajor(${idx})" style="background:rgba(26,111,212,.7);border:none;color:#fff;border-radius:4px;padding:2px 9px;cursor:pointer;font-size:11px;font-family:'Sarabun',sans-serif">💾 บันทึกข้อใหญ่นี้</button>
+        <button onclick="delItem(${idx})" style="background:rgba(192,57,43,.7);border:none;color:#fff;border-radius:4px;padding:2px 7px;cursor:pointer;font-size:11px;font-family:'Sarabun',sans-serif">✕ ลบ</button>
+      </div>
+    </div>
+    <div class="meq-major-b">
+      <div style="margin-bottom:10px">
+        <label style="font-size:11px;font-weight:600;display:block;margin-bottom:3px">Tag โรค</label>
+        <input type="text" id="cr-dis-${idx}" value="${item.disease||''}" placeholder="Psoriasis" style="font-size:12px;max-width:300px">
+      </div>
+      <div style="font-size:11px;font-weight:700;color:var(--navy);margin-bottom:7px">ข้อย่อย</div>
+      <div id="meq-subs-${idx}">${subs}</div>
+      <button class="btn btn-ghost btn-sm" style="margin-top:6px" onclick="addMEQSub(${idx})">➕ เพิ่มข้อย่อย</button>
+    </div>
+  </div>`;
+}
+
+function buildMEQSubHTML(idx,qi,sq){
+  // Use unique file id: pfimeq-{idx}-{qi}  (no arithmetic)
+  const fileId=`pfimeq-${idx}-${qi}`;
+  const pzId=`pzmeq-${idx}-${qi}`;
+  const pz=sq.dataUrl
+  sq.dataUrl
+    ? `<div class="pzone filled" id="${pzId}" onmouseenter="crActivePZ='meq:${idx}:${qi}'">
+        <img src="${sq.dataUrl}" alt="" style="width:100%;max-height:220px;object-fit:contain;display:block;border-radius:var(--rsm)" referrerpolicy="no-referrer">
+        <div class="pzone-btns">
+          <button onclick="event.stopPropagation();clearMEQSubImg(${idx},${qi})">🗑️ ลบ</button>
+          <button onclick="event.stopPropagation();document.getElementById('${fileId}').click()">☁️ เปลี่ยน</button>
+        </div>
+        <div style="position:absolute;bottom:4px;left:5px;font-size:9px;background:rgba(26,111,212,.85);color:#fff;padding:1px 6px;border-radius:3px;pointer-events:none">☁️ Drive</div>
+        <input type="file" id="${fileId}" accept="image/*" style="display:none" onchange="loadMEQSubImg(event,${idx},${qi})">
+      </div>`
+    : `<div class="pzone" id="${pzId}" onmouseenter="crActivePZ='meq:${idx}:${qi}'"
+        ondragover="event.preventDefault();this.classList.add('drag')"
+        ondragleave="this.classList.remove('drag')"
+        ondrop="dropMEQSubImg(event,${idx},${qi})"
+        onclick="document.getElementById('${fileId}').click()">
+        <div class="ph"><div class="pi">☁️</div><p><b>คลิก</b> เลือกไฟล์<br><b>Ctrl+V</b> วางจาก clipboard<br><b>ลากไฟล์</b> มาวาง<br><small style='opacity:.6'>Upload ไป Google Drive</small></p></div>
+        <input type="file" id="${fileId}" accept="image/*" style="display:none" onchange="loadMEQSubImg(event,${idx},${qi})">
+      </div>`;
+  return `<div class="meq-sub-item" id="cr-sub-${idx}-${qi}" style="margin-bottom:8px">
+    <div class="meq-sub-h">
+      <span>ข้อย่อย ${idx+1}.${qi+1} — <b id="meq-t-lbl-${idx}-${qi}">${sq.timePerQ||90}</b>s</span>
+      <button onclick="delMEQSub(${idx},${qi})" style="background:rgba(192,57,43,.15);border:none;color:var(--red);border-radius:3px;padding:1px 6px;cursor:pointer;font-size:10px;font-family:'Sarabun',sans-serif">✕ ลบข้อย่อย</button>
+    </div>
+    <div class="meq-sub-b">
+      <div style="display:grid;grid-template-columns:185px 1fr;gap:10px">
+        <div>
+          ${pz}
+          <div class="field" style="margin-top:6px">
+            <label>เวลา (วินาที)</label>
+            <input type="number" id="meq-t-${idx}-${qi}" value="${sq.timePerQ||90}" min="30" max="600"
+              oninput="if($('meq-t-lbl-${idx}-${qi}'))$('meq-t-lbl-${idx}-${qi}').textContent=this.value"
+              style="font-size:11px">
+          </div>
+          <div class="field">
+            <label>Caption / ข้อความ</label>
+            <textarea id="meq-cap-${idx}-${qi}" style="min-height:90px;font-size:12px" placeholder="ข้อความประกอบ...">${sq.caption||''}</textarea>
+          </div>
+        </div>
+        <div>
+          <div class="field">
+            <label>คำถาม (Question) <span style="color:var(--red)">*</span></label>
+            <textarea id="meq-q-${idx}-${qi}" style="min-height:150px;font-size:13px" placeholder="Enter question...">${sq.question||''}</textarea>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>`;
+}
+
+/* ══════════════════════════════════════════════════
+   IMAGE → GOOGLE DRIVE via Apps Script
+   dataUrl field now stores Drive URL (not base64)
+══════════════════════════════════════════════════ */
+
+// Show upload spinner overlay
+function showUploadSpinner(pzId){
+  const el=document.getElementById(pzId);
+  if(!el)return;
+  el.innerHTML='<div style="display:flex;flex-direction:column;align-items:center;justify-content:center;height:100%;gap:8px;color:rgba(255,255,255,.7);font-size:12px"><div class=\'upload-spin\'></div>กำลัง upload...</div>';
+  el.style.background='#0c1a2e';
+}
+
+// Core: read file → upload to Drive → get URL → set in data
+async function uploadFileToDrive(file, pzId, onSuccess){
+  if(!file||!file.type.startsWith('image/')){alert('กรุณาเลือกไฟล์รูปภาพ');return;}
+  if(file.size > 10*1024*1024){alert('ไฟล์ใหญ่เกิน 10MB กรุณาลดขนาดก่อน');return;}
+  showUploadSpinner(pzId);
+  try{
+    const base64=await fileToBase64(file);
+    const url=_GS_URL;
+    const resp=await fetch(url,{
+      method:'POST',
+      body:JSON.stringify({
+        sheet:'uploadImage',
+        data:{base64:base64.split(',')[1], mimeType:file.type, filename:file.name||'image.jpg'}
+      })
+    });
+    const json=await resp.json();
+    if(json.ok && json.imageUrl){
+      gatherAll();
+      onSuccess(json.imageUrl);
+      renderCrRight();
+    } else {
+      alert('Upload ไม่สำเร็จ: '+(json.error||'Unknown error')+'\nลองใหม่อีกครั้ง');
+      gatherAll();renderCrRight();
+    }
+  }catch(err){
+    alert('Upload ผิดพลาด: '+err.message+'\n\nตรวจสอบการเชื่อมต่อ Google Sheets');
+    gatherAll();renderCrRight();
+  }
+}
+
+function fileToBase64(file){
+  return new Promise((res,rej)=>{
+    const r=new FileReader();
+    r.onload=e=>res(e.target.result);
+    r.onerror=rej;
+    r.readAsDataURL(file);
+  });
+}
+
+/* ── 2Q image handlers ── */
+async function load2QImg(e,idx){
+  const f=e.target.files[0];if(!f)return;
+  e.target.value='';
+  const pzId='pz2q-'+idx;
+  await uploadFileToDrive(f, pzId, url=>{crItems[idx].dataUrl=url;});
+}
+async function drop2QImg(e,idx){
+  e.preventDefault();e.currentTarget.classList.remove('drag');
+  const f=e.dataTransfer.files[0];if(!f||!f.type.startsWith('image/'))return;
+  const pzId='pz2q-'+idx;
+  await uploadFileToDrive(f, pzId, url=>{crItems[idx].dataUrl=url;});
+}
+function clear2QImg(idx){gatherAll();if(crItems[idx])crItems[idx].dataUrl='';renderCrRight();}
+
+/* ── MEQ sub-question image handlers ── */
+async function loadMEQSubImg(e,idx,qi){
+  const f=e.target.files[0];if(!f)return;
+  e.target.value='';
+  const pzId='pzmeq-'+idx+'-'+qi;
+  await uploadFileToDrive(f, pzId, url=>{if(crItems[idx]?.subQuestions?.[qi])crItems[idx].subQuestions[qi].dataUrl=url;});
+}
+async function dropMEQSubImg(e,idx,qi){
+  e.preventDefault();e.currentTarget.classList.remove('drag');
+  const f=e.dataTransfer.files[0];if(!f||!f.type.startsWith('image/'))return;
+  const pzId='pzmeq-'+idx+'-'+qi;
+  await uploadFileToDrive(f, pzId, url=>{if(crItems[idx]?.subQuestions?.[qi])crItems[idx].subQuestions[qi].dataUrl=url;});
+}
+function clearMEQSubImg(idx,qi){gatherAll();if(crItems[idx]?.subQuestions?.[qi])crItems[idx].subQuestions[qi].dataUrl='';renderCrRight();}
+
+/* ── PASTE (track active paste zone) ── */
+let crActivePZ=''; // '2q:idx' or 'meq:idx:qi'
+function setupPaste(){
+  document.removeEventListener('paste',_pH);
+  document.addEventListener('paste',_pH);
+}
+function _pH(e){
+  if(!$('pg-create')?.classList.contains('on'))return;
+  const items=e.clipboardData?.items;
+  if(!items||!items.length)return;
+  for(let i=0;i<items.length;i++){
+    const it=items[i];
+    if(it&&it.type&&it.type.startsWith('image/')){
+      const f=it.getAsFile();
+      if(!f)continue;
+      const parts=(crActivePZ||'').split(':');
+      if(parts[0]==='2q'){
+        const idx=parseInt(parts[1]);
+        if(!isNaN(idx)&&crItems[idx]){
+          const pzId='pz2q-'+idx;
+          uploadFileToDrive(f,pzId,url=>{crItems[idx].dataUrl=url;});
+        }
+      } else if(parts[0]==='meq'){
+        const idx=parseInt(parts[1]),qi=parseInt(parts[2]);
+        if(!isNaN(idx)&&!isNaN(qi)&&crItems[idx]?.subQuestions?.[qi]){
+          const pzId='pzmeq-'+idx+'-'+qi;
+          uploadFileToDrive(f,pzId,url=>{crItems[idx].subQuestions[qi].dataUrl=url;});
+        }
+      } else {
+        // fallback
+        if(crType==='2Q'&&crItems.length>0){
+          uploadFileToDrive(f,'pz2q-0',url=>{crItems[0].dataUrl=url;});
+        } else if(crType==='MEQ'&&crItems[0]?.subQuestions?.[0]){
+          uploadFileToDrive(f,'pzmeq-0-0',url=>{crItems[0].subQuestions[0].dataUrl=url;});
+        }
+      }
+      break;
+    }
+  }
+}
+
+/* ── SYNC FUNCTIONS ── */
+function sync2QQ(idx,qi,val){if(crItems[idx]?.questions)crItems[idx].questions[qi]=val;}
+
+/* ── ADD/DEL ── */
+function add2QItem(){
+  gatherAll();
+  const t=parseInt($('cr-2q-shared-time')?.value)||90;
+  crItems.push({id:genId(),timePerQ:t,dataUrl:'',caption:'',disease:'',questions:['']});
+  renderCrRight();
+  requestAnimationFrame(()=>{const el=$('cr-item-'+(crItems.length-1));if(el)el.scrollIntoView({behavior:'smooth',block:'start'});});
+}
+function addMEQMajor(){
+  gatherAll();
+  crItems.push({id:genId(),disease:'',subQuestions:[{id:genId(),timePerQ:90,question:'',dataUrl:'',caption:''}]});
+  renderCrRight();
+  requestAnimationFrame(()=>{const el=$('cr-item-'+(crItems.length-1));if(el)el.scrollIntoView({behavior:'smooth',block:'start'});});
+}
+function addMEQSub(idx){
+  gatherAll();
+  if(!crItems[idx])return;
+  crItems[idx].subQuestions=crItems[idx].subQuestions||[];
+  crItems[idx].subQuestions.push({id:genId(),timePerQ:90,question:'',dataUrl:'',caption:''});
+  renderCrRight();
+  setTimeout(()=>{const el=$(`cr-sub-${idx}-${(crItems[idx].subQuestions.length-1)}`);if(el)el.scrollIntoView({behavior:'smooth',block:'start'});},100);
+}
+function add2QQ(idx){
+  gatherAll();
+  if(crItems[idx]?.questions)crItems[idx].questions.push('');
+  renderCrRight();
+}
+function del2QQ(idx,qi){
+  gatherAll();
+  crItems[idx]?.questions?.splice(qi,1);
+  if(!crItems[idx]?.questions?.length)crItems[idx].questions=[''];
+  renderCrRight();
+}
+function delMEQSub(idx,qi){
+  gatherAll();
+  crItems[idx]?.subQuestions?.splice(qi,1);
+  if(!crItems[idx]?.subQuestions?.length)crItems[idx].subQuestions=[{id:genId(),timePerQ:90,question:'',dataUrl:'',caption:''}];
+  renderCrRight();
+}
+function delItem(idx){gatherAll();crItems.splice(idx,1);renderCrRight();}
+
+/* ── GATHER ALL VALUES FROM DOM ── */
+function gatherAll(){
+  crItems.forEach((item,idx)=>{
+    const dis=$(`cr-dis-${idx}`);if(dis)item.disease=dis.value;
+    const cap=$(`cr-cap-${idx}`);if(cap)item.caption=cap.value;
+    if(crType==='2Q'){
+      const tpq=$(`cr-tpq-${idx}`);if(tpq)item.timePerQ=+tpq.value;
+      (item.questions||[]).forEach((_,qi)=>{const el=$(`q2_${idx}_${qi}`);if(el)item.questions[qi]=el.value;});
+    } else {
+      (item.subQuestions||[]).forEach((sq,qi)=>{
+        const q=$(`meq-q-${idx}-${qi}`);if(q)sq.question=q.value;
+        const c=$(`meq-cap-${idx}-${qi}`);if(c)sq.caption=c.value;
+        const t=$(`meq-t-${idx}-${qi}`);if(t)sq.timePerQ=+t.value||90;
+      });
+    }
+  });
+}
+
+/* ── PER-ITEM SAVE ── */
+function save2QItem(idx){
+  gatherAll();
+  const item=crItems[idx];
+  if(!(item.questions||[]).some(q=>q.trim())){alert(`ข้อ ${idx+1}: กรุณาเพิ่มคำถามอย่างน้อย 1 ข้อ`);return;}
+  // update shared time for all items
+  const t=parseInt($('cr-2q-shared-time')?.value)||90;
+  crItems.forEach(it=>it.timePerQ=t);
+  persistExamDraft();
+  // flash button
+  const btn2=document.querySelector(`#cr-item-${idx} .q2-item-h button`);
+  if(btn2&&btn2.textContent.includes('บันทึก')){btn2.textContent='✅ บันทึกแล้ว';setTimeout(()=>{if(btn2)btn2.textContent='💾 บันทึกข้อนี้';},1500);}
+  alert('✅ บันทึกข้อ '+(idx+1)+' แล้ว');
+}
+function saveMEQMajor(idx){
+  gatherAll();
+  const item=crItems[idx];
+  if(!(item.subQuestions||[]).length){alert(`ข้อใหญ่ ${idx+1}: กรุณาเพิ่มข้อย่อยอย่างน้อย 1 ข้อ`);return;}
+  const missing=item.subQuestions.findIndex(sq=>!sq.question?.trim());
+  if(missing>=0){alert(`ข้อใหญ่ ${idx+1} ข้อย่อย ${missing+1}: กรุณากรอกคำถาม`);return;}
+  persistExamDraft();
+  const btnm=document.querySelector(`#cr-item-${idx} .meq-major-h button`);
+  if(btnm&&btnm.textContent.includes('บันทึก')){btnm.textContent='✅ บันทึกแล้ว';setTimeout(()=>{if(btnm)btnm.textContent='💾 บันทึกข้อใหญ่นี้';},1500);}
+  alert('✅ บันทึกข้อใหญ่ '+(idx+1)+' แล้ว');
+}
+
+function persistExamDraft(){
+  // save draft to localStorage (not final save)
+  try{ss('exam_draft',{type:crType,name:($('cr-name')||{}).value||'',items:deepCopy(crItems),editId:crEditId});}catch(e){}
+}
+
+/* ── FINAL SAVE ── */
+function saveExam(){
+  try{
+    gatherAll();
+    const name=($('cr-name')||{value:''}).value.trim();
+    if(!name){alert('กรุณากรอกชื่อชุดข้อสอบก่อน');return;}
+    if(!crItems.length){alert('กรุณาเพิ่มข้อสอบอย่างน้อย 1 ข้อก่อน');return;}
+    if(!ME){alert('กรุณาเข้าสู่ระบบก่อน');return;}
+
+    if(crType==='2Q'){
+      for(let i=0;i<crItems.length;i++){
+        if(!(crItems[i].questions||[]).some(q=>(q||'').trim())){
+          alert('ข้อ '+(i+1)+': กรุณาเพิ่มคำถามอย่างน้อย 1 ข้อ');return;
+        }
+      }
+      const t=parseInt(($('cr-2q-shared-time')||{value:'90'}).value)||90;
+      crItems.forEach(it=>it.timePerQ=t);
+    } else {
+      for(let i=0;i<crItems.length;i++){
+        const subs=crItems[i].subQuestions||[];
+        if(!subs.length){alert('ข้อใหญ่ '+(i+1)+': กรุณาเพิ่มข้อย่อยอย่างน้อย 1 ข้อ');return;}
+        for(let j=0;j<subs.length;j++){
+          if(!(subs[j].question||'').trim()){alert('ข้อใหญ่ '+(i+1)+' ข้อย่อย '+(j+1)+': กรุณากรอกคำถาม');return;}
+        }
+      }
+    }
+
+    const exam={
+      id:crEditId||genId(),type:crType,
+      name:name,
+      totalTime:parseInt(($('cr-total')||{value:'60'}).value)||60,
+      items:deepCopy(crItems),
+      createdBy:ME.username,
+      createdAt:crEditId?(getExams().find(e=>e.id===crEditId)||{}).createdAt||new Date().toISOString():new Date().toISOString(),
+      updatedAt:new Date().toISOString(),
+      usedDates:crEditId?(getExams().find(e=>e.id===crEditId)||{}).usedDates||[]:[],
+    };
+
+    const all=getExams().filter(e=>e.id!==exam.id);
+    all.push(exam);
+
+    try{
+      ss('exams',all);
+    }catch(storageErr){
+      // Storage quota exceeded - try without images
+      alert('\u26a0\ufe0f พื้นที่จัดเก็บเต็ม ลองลดขนาดรูปภาพก่อนบันทึก ('+(storageErr.message||'quota exceeded')+')');
+      return;
+    }
+
+    gSync('exams',all);
+    try{ss('exam_draft',null);}catch(e){}
+    alert('✅ บันทึกชุดข้อสอบ "'+name+'" เรียบร้อยแล้ว!');
+    showPage('pg-teacher');
+  }catch(err){
+    alert('\u274c เกิดข้อผิดพลาด: '+(err&&err.message||String(err)));
+    console.error('saveExam error:',err);
+  }
+}
+
+function previewAS(){
+  gatherAll();
+  const name=$('cr-name').value||'ชุดข้อสอบ';
+  let html=`<div style="font-family:Sarabun,sans-serif"><div style="text-align:center;margin-bottom:10px"><h2 style="font-size:17px;font-weight:800">Answer Sheet — ${crType}</h2><p style="font-size:12px;color:#666">${name}</p></div><div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:7px;font-size:12px"><div>Name: ___________________________</div><div>Date: ___________________________</div></div><hr style="margin-bottom:10px">`;
+  crItems.forEach((item,si)=>{
+    const qs=crType==='2Q'?(item.questions||[]).filter(q=>q.trim()):(item.subQuestions||[]).filter(sq=>sq.question?.trim()).map(sq=>sq.question);
+    html+=`<div style="margin-bottom:12px"><div style="background:#0b1f3a;color:#fff;padding:6px 10px;border-radius:4px 4px 0 0;font-weight:700;font-size:12px">ข้อ ${si+1}${item.disease?` — ${item.disease}`:''}</div><div style="border:1px solid #dde4ef;border-top:none;padding:9px;border-radius:0 0 4px 4px">`;
+    qs.forEach((q,qi)=>{html+=`<div style="margin-bottom:9px"><div style="font-size:11px;font-weight:700;margin-bottom:3px">${si+1}.${qi+1}) ${q}</div><div style="border-bottom:1px solid #ccc;height:20px;margin-bottom:2px"></div><div style="border-bottom:1px solid #ccc;height:20px;margin-bottom:2px"></div><div style="border-bottom:1px solid #ccc;height:20px"></div></div>`;});
+    html+='</div></div>';
+  });
+  html+='</div>';
+  $('m-as-b').innerHTML=html;openM('m-as');
+}
+
+function showDetail(id){
+  const e=getExams().find(x=>x.id===id);if(!e)return;
+  $('md-t').textContent=e.name;
+  const totalQ=e.type==='MEQ'?e.items?.reduce((s,it)=>s+(it.subQuestions?.length||0),0):e.items?.length;
+  $('md-b').innerHTML=`
+    <div class="g2" style="margin-bottom:11px">
+      <div><span style="font-size:10px;color:var(--txt2)">ประเภท</span><br><span class="badge ${e.type==='MEQ'?'b-blue':'b-purple'}">${e.type}</span></div>
+      <div><span style="font-size:10px;color:var(--txt2)">สร้างโดย</span><br><b>${e.createdBy}</b></div>
+      <div><span style="font-size:10px;color:var(--txt2)">${e.type==='MEQ'?'ข้อใหญ่':'ข้อ'}</span><br>${(e.items||[]).length}</div>
+      <div><span style="font-size:10px;color:var(--txt2)">${e.type==='MEQ'?'ข้อย่อยรวม':'คำถาม/ข้อ'}</span><br>${totalQ}</div>
+    </div>
+    ${(e.items||[]).map((item,i)=>`<div style="margin-bottom:7px;background:var(--s2);border-radius:6px;padding:9px;border:1px solid var(--border)">
+      <b style="font-size:12px">${e.type==='MEQ'?'ข้อใหญ่':'ข้อ'} ${i+1}${item.disease?' — '+item.disease:''}</b>
+      <span style="font-size:10px;color:var(--txt2);margin-left:8px">${e.type==='MEQ'?(item.subQuestions?.length||0)+' ข้อย่อย':(item.questions||[]).filter(q=>q.trim()).length+' คำถาม'}</span>
+    </div>`).join('')}
+    <div style="font-size:11px;color:var(--txt2);margin-top:7px">ใช้สอบ ${e.usedDates?.length||0} ครั้ง | ${fmtD(e.createdAt)}</div>`;
+  $('md-edit').onclick=()=>{closeM('m-detail');goCreate(e.type,e.id);};
+  $('md-del').onclick=()=>{if(!confirm('ยืนยันลบ?'))return;const all=getExams().filter(x=>x.id!==id);ss('exams',all);closeM('m-detail');renderTStats();renderTList();};
+  openM('m-detail');
+}
+
+/* ── PICK FROM BANK ── */
+let _pickSelected=[];
+let _pickDis='',_pickExam='';
+
+function openPickModal(){
+  _pickSelected=[];_pickDis='';_pickExam='';
+  renderPickModal();
+  openM('m-pick');
+}
+
+function renderPickModal(){
+  const exams=getExams().filter(e=>e.type===crType);
+  $('pick-t').textContent='เลือก'+(crType==='2Q'?'ข้อ':'ข้อใหญ่')+' จากคลัง ('+crType+')';
+  const diseases=[...new Set(exams.flatMap(ex=>(ex.items||[]).map(it=>it.disease).filter(Boolean)))];
+  const filterHtml=`<div style="display:flex;gap:6px;margin-bottom:10px;flex-wrap:wrap">
+    <select style="flex:1;min-width:140px;font-size:12px" onchange="_pickExam=this.value;renderPickItems()">
+      <option value="">— ชุดข้อสอบทั้งหมด —</option>
+      ${exams.map(e=>'<option value="'+e.id+'">'+e.name+'</option>').join('')}
+    </select>
+    <select style="flex:1;min-width:100px;font-size:12px" onchange="_pickDis=this.value;renderPickItems()">
+      <option value="">— โรคทั้งหมด —</option>
+      ${diseases.map(d=>'<option value="'+d+'">'+d+'</option>').join('')}
+    </select>
+  </div><div id="pick-items"></div>`;
+  $('pick-b').innerHTML=filterHtml;
+  renderPickItems();
+}
+
+function renderPickItems(){
+  const exams=getExams().filter(e=>e.type===crType&&(!_pickExam||e.id===_pickExam));
+  let html='';let count=0;
+  exams.forEach(ex=>{
+    const filtered=(ex.items||[]).filter(it=>!_pickDis||it.disease===_pickDis);
+    if(!filtered.length)return;
+    html+='<div style="margin-bottom:10px"><div style="font-size:10px;font-weight:700;color:var(--txt2);padding:3px 8px;background:var(--s2);border-radius:4px;margin-bottom:5px">'+ex.name+'</div>';
+    (ex.items||[]).forEach((item,i)=>{
+      if(_pickDis&&item.disease!==_pickDis)return;
+      count++;
+      const key=ex.id+'::'+i;
+      const safeKey=key.replace('::','-');
+      const isSel=_pickSelected.includes(key);
+      const thumb=crType==='MEQ'?(item.subQuestions&&item.subQuestions[0]&&item.subQuestions[0].dataUrl||''):(item.dataUrl||'');
+      const qs=crType==='2Q'?(item.questions||[]).filter(q=>q.trim()):(item.subQuestions||[]).map(sq=>sq.question).filter(Boolean);
+      const pz=thumb?('<img src="'+thumb+'" style="width:60px;height:44px;object-fit:cover;border-radius:4px;flex-shrink:0">'):'<div style="width:60px;height:44px;background:var(--s2);border-radius:4px;display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0">📋</div>';
+      const chkStyle=isSel?'background:#1a6fd4;color:#fff;border-color:#1a6fd4':'';
+      // Use data-key attribute to avoid quote issues in onclick
+      html+='<div class="pick-item'+(isSel?' selected':'')+'" id="pk-'+safeKey+'" data-key="'+key+'" onclick="pickItemClick(this)" style="align-items:flex-start">'+
+        '<div style="width:18px;height:18px;border-radius:4px;border:1.5px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:11px;flex-shrink:0;margin-top:3px;'+chkStyle+'" id="pkc-'+safeKey+'">'+(isSel?'✓':'')+'</div>'+
+        pz+
+        '<div style="flex:1;min-width:0;overflow:hidden">'+
+          '<div style="font-size:12px;font-weight:700">'+(crType==='2Q'?'ข้อ':'ข้อใหญ่')+' '+(i+1)+(item.disease?' — '+item.disease:'')+'</div>'+
+          '<div style="font-size:10px;color:var(--txt2);margin-top:1px">'+qs.length+' คำถาม</div>'+
+          qs.slice(0,2).map((q,qi)=>'<div style="font-size:10px;color:var(--txt2);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">'+(qi+1)+'. '+q+'</div>').join('')+
+        '</div></div>';
+    });
+    html+='</div>';
+  });
+  if(!count)html='<div class="empty"><div class="ei">📋</div><p>ไม่พบข้อสอบ</p></div>';
+  if($('pick-items'))$('pick-items').innerHTML=html;
+}
+
+function pickItemClick(el){
+  const key=el.dataset.key;
+  if(!key)return;
+  const safeKey=key.replace('::','-');
+  const chk=$('pkc-'+safeKey);
+  const idx=_pickSelected.indexOf(key);
+  if(idx>=0){
+    _pickSelected.splice(idx,1);el.classList.remove('selected');
+    if(chk){chk.textContent='';chk.style.background='';chk.style.color='';chk.style.borderColor='';}
+  }else{
+    _pickSelected.push(key);el.classList.add('selected');
+    if(chk){chk.textContent='✓';chk.style.background='#1a6fd4';chk.style.color='#fff';chk.style.borderColor='#1a6fd4';}
+  }
+}
+
+function togglePick(key,el){
+  const idx=_pickSelected.indexOf(key);
+  const chk=$('pkc-'+key.replace('::','-'));
+  if(idx>=0){
+    _pickSelected.splice(idx,1);el.classList.remove('selected');
+    if(chk){chk.textContent='';chk.style.background='';chk.style.color='';chk.style.borderColor='';}
+  }else{
+    _pickSelected.push(key);el.classList.add('selected');
+    if(chk){chk.textContent='✓';chk.style.background='#1a6fd4';chk.style.color='#fff';chk.style.borderColor='#1a6fd4';}
+  }
+}
+
+function confirmPick(){
+  if(!_pickSelected.length){closeM('m-pick');return;}
+  gatherAll();
+  const exams=getExams();
+  _pickSelected.forEach(key=>{
+    const parts=key.split('::');const eid=parts[0],i=parseInt(parts[1]);
+    const ex=exams.find(e=>e.id===eid);if(!ex)return;
+    const item=deepCopy(ex.items&&ex.items[i]);if(!item)return;
+    item.id=genId();
+    if(crType==='MEQ'&&item.subQuestions)item.subQuestions=item.subQuestions.map(sq=>Object.assign({},sq,{id:genId()}));
+    crItems.push(item);
+  });
+  closeM('m-pick');renderCrRight();
+}
+
+/* ══════════════ STUDENT ══════════════ */
+function renderSList(){
+  if(!ME)return;
+  const tf=$('s-tf').value,s=$('s-q').value.toLowerCase();
+  const assign=getAssign();
+  const hasAssign=Object.keys(assign).some(k=>assign[k]?.length>0);
+  let list=getExams().filter(e=>(!tf||e.type===tf)&&(!s||e.name.toLowerCase().includes(s)));
+  if(hasAssign)list=list.filter(e=>(assign[e.id]||[]).includes(ME.username));
+  list.sort((a,b)=>new Date(b.createdAt)-new Date(a.createdAt));
+  const el=$('s-list');
+  if(!list.length){el.innerHTML='<div class="empty"><div class="ei">📋</div><p>ยังไม่มีข้อสอบที่มอบหมาย</p></div>';return;}
+  $('s-sub').textContent=`ชุดข้อสอบที่ได้รับมอบหมาย (${list.length} ชุด)`;
+  el.innerHTML=list.map(e=>{
+    const done=getAnswers().find(a=>a.examId===e.id&&a.student===ME.username);
+    return `<div class="s-card" onclick="selectExam('${e.id}')">
+      <div class="etype ${e.type==='MEQ'?'et-meq':'et-2q'}">${e.type}</div>
+      <div style="flex:1">
+        <div style="font-weight:700;font-size:14px;margin-bottom:3px">${e.name}</div>
+        <div style="font-size:11px;color:var(--txt2)">${(e.items||[]).length} ${e.type==='MEQ'?'ข้อใหญ่':'ข้อ'}</div>
+        ${done?`<span class="badge b-green" style="margin-top:4px;display:inline-flex">✅ ทำแล้ว ${fmtD(done.submittedAt)}</span>`:''}
+      </div>
+      <span style="font-size:17px;color:var(--txt2)">▶</span>
+    </div>`;
+  }).join('');
+}
+
+/* ══════════════ EXAM FLOW ══════════════ */
+let AX=null,timerInt=null,tLeft=0,lastRes=null;
+
+// 2Q state
+let q2Cur=0,q2AnsPanel=0,q2Answers=[];
+// MEQ state: flatten sub-questions
+let mqFlat=[],mqCur=0,mqAnswers=[];
+
+function selectExam(id){
+  AX=getExams().find(e=>e.id===id);if(!AX)return;
+  $('bf-name').textContent=AX.name;
+  if(AX.type==='2Q'){
+    $('bf-meta').textContent=`2Q · ${(AX.items||[]).length} ข้อ`;
+    $('bf-info').innerHTML='📌 <b>2Q</b> — โจทย์เลื่อนอัตโนมัติตามเวลา · กระดาษคำตอบสามารถย้อนดูแก้ไขได้';
+    $('bf-detail-title').textContent='ข้อที่มีในชุดนี้:';
+    $('bf-detail').innerHTML=(AX.items||[]).map((it,i)=>`<div style="font-size:12px;margin-bottom:2px">ข้อ ${i+1} — ${(it.questions||[]).filter(q=>q.trim()).length} คำถาม · ${it.timePerQ||90}s</div>`).join('');
+  } else {
+    const total=(AX.items||[]).reduce((s,it)=>s+(it.subQuestions?.length||0),0);
+    $('bf-meta').textContent=`MEQ · ${(AX.items||[]).length} ข้อใหญ่ · ${total} ข้อย่อย`;
+    $('bf-info').innerHTML='📌 <b>MEQ</b> — ทำทีละข้อย่อย โจทย์และกระดาษคำตอบเปลี่ยนพร้อมกัน ย้อนกลับไม่ได้';
+    $('bf-detail-title').textContent='ข้อใหญ่ในชุดนี้:';
+    $('bf-detail').innerHTML=(AX.items||[]).map((it,i)=>`<div style="font-size:12px;margin-bottom:2px">ข้อใหญ่ ${i+1} — ${(it.subQuestions||[]).length} ข้อย่อย</div>`).join('');
+  }
+  showPage('pg-briefing');
+}
+
+function startExam(){
+  if(AX.type==='2Q') start2Q();
+  else startMEQ();
+}
+
+/* ── 2Q EXAM ── */
+function start2Q(){
+  q2Cur=0;q2AnsPanel=0;
+  q2Answers=(AX.items||[]).map(item=>{
+    const qs=(item.questions||[]).filter(q=>q.trim());
+    return{answers:qs.map(()=>'')};
+  });
+  $('ex2-name').textContent=AX.name;$('ex2-stu').textContent=ME.name;
+  showPage('pg-exam-2q');
+  load2QQuestion();
+}
+
+function load2QQuestion(){
+  // Left panel: always shows current timed question
+  const item=AX.items[q2Cur];
+  $('ex2-qnum').textContent='ข้อที่ '+(q2Cur+1);
+  $('ex2-prog').textContent=(q2Cur+1)+'/'+(AX.items.length);
+  $('ex2-qr').textContent=q2Cur+1;
+  const img=$('ex2-img'),noImg=$('ex2-noimg');
+  if(item.dataUrl){img.src=item.dataUrl;img.style.display='block';noImg.style.display='none';}
+  else{img.style.display='none';noImg.style.display='block';noImg.textContent=item.caption||'📋';}
+  $('ex2-cap').textContent=item.caption||'';
+  // right panel: show answer panel for q2AnsPanel
+  render2QAnswerPanel();
+  render2QDots();
+  clearInterval(timerInt);tLeft=item.timePerQ||90;
+  update2QTimer();
+  timerInt=setInterval(()=>{
+    tLeft--;update2QTimer();
+    if(tLeft<=0){clearInterval(timerInt);save2QCurrent();advance2Q();}
+  },1000);
+}
+
+function render2QAnswerPanel(){
+  const item=AX.items[q2AnsPanel];
+  const qs=(item.questions||[]).filter(q=>q.trim());
+  $('ex2-ans-qnum').textContent=q2AnsPanel+1;
+  $('ex2-ans').innerHTML=qs.map((q,qi)=>`
+    <div class="ex-ans-card">
+      <div class="ex-ans-lbl"><div class="qi">${q2AnsPanel+1}.${qi+1}</div>${q}</div>
+      <textarea style="width:100%;min-height:68px;font-size:12px" id="a2_${q2AnsPanel}_${qi}" oninput="save2QField(${q2AnsPanel},${qi},this.value)" placeholder="Type answer...">${q2Answers[q2AnsPanel]?.answers[qi]||''}</textarea>
+    </div>`).join('');
+}
+
+function render2QDots(){
+  $('ex2-dots').innerHTML=(AX.items||[]).map((_,i)=>{
+    const done=i<q2Cur||i===q2Cur;
+    const isCurTimer=i===q2Cur;
+    const isCurAns=i===q2AnsPanel;
+    let cls='dot d-nav ';
+    if(isCurTimer&&isCurAns)cls+='d-cur';
+    else if(done&&isCurAns)cls+='d-done';
+    else if(done)cls+='d-done';
+    else if(isCurTimer)cls+='d-cur';
+    else cls+='d-idle';
+    return `<div class="${cls}" onclick="switch2QAns(${i})" title="ดูคำตอบข้อ ${i+1}">${i+1}</div>`;
+  }).join('');
+}
+
+function switch2QAns(i){
+  save2QCurrent();
+  q2AnsPanel=i;
+  render2QAnswerPanel();
+  render2QDots();
+}
+
+function save2QCurrent(){
+  const item=AX.items[q2AnsPanel];
+  const qs=(item.questions||[]).filter(q=>q.trim());
+  qs.forEach((_,qi)=>{const el=$('a2_'+q2AnsPanel+'_'+qi);if(el)q2Answers[q2AnsPanel].answers[qi]=el.value;});
+}
+
+function save2QField(pIdx,qi,val){
+  if(q2Answers[pIdx])q2Answers[pIdx].answers[qi]=val;
+}
+
+function advance2Q(){
+  save2QCurrent();
+  if(q2Cur<AX.items.length-1){
+    q2Cur++;q2AnsPanel=q2Cur;
+    load2QQuestion();
+  } else finish2Q();
+}
+
+function update2QTimer(){
+  const tot=AX.items[q2Cur]?.timePerQ||90,r=Math.max(0,tLeft/tot);
+  const m=Math.floor(tLeft/60),s=tLeft%60,lbl=m+':'+(s<10?'0':'')+s;
+  $('ex2-main-t').textContent=lbl;$('ex2-sm-t').textContent=lbl;
+  $('ex2-main-arc').style.strokeDashoffset=138.2*(1-r);
+  $('ex2-sm-arc').style.strokeDashoffset=94.2*(1-r);
+  [$('ex2-main-arc').closest('.tring'),$('ex2-sm-arc').closest('.tring')].forEach(ring=>{
+    if(!ring)return;ring.classList.remove('warn','danger');
+    if(r<0.2)ring.classList.add('danger');else if(r<0.4)ring.classList.add('warn');
+  });
+}
+
+function finish2Q(){
+  clearInterval(timerInt);
+  const res={id:genId(),examId:AX.id,examName:AX.name,examType:'2Q',
+    student:ME.username,studentName:ME.name,
+    answers:deepCopy(q2Answers),submittedAt:new Date().toISOString()};
+  saveResult(res);
+}
+
+/* ── MEQ EXAM ── */
+function startMEQ(){
+  // flatten: [{majorIdx, subIdx, item(major), sq(sub)}]
+  mqFlat=[];
+  (AX.items||[]).forEach((major,mi)=>{
+    (major.subQuestions||[]).forEach((sq,si)=>{
+      mqFlat.push({mi,si,major,sq});
+    });
+  });
+  mqCur=0;
+  mqAnswers=mqFlat.map(()=>({answer:''}));
+  $('exm-name').textContent=AX.name;$('exm-stu').textContent=ME.name;
+  showPage('pg-exam-meq');
+  loadMEQSub();
+}
+
+function loadMEQSub(){
+  const f=mqFlat[mqCur];
+  const {mi,si,major,sq}=f;
+  $('exm-qnum').textContent=`ข้อใหญ่ ${mi+1}.${si+1}`;
+  $('exm-prog').textContent=(mqCur+1)+'/'+mqFlat.length;
+  $('exm-qr').textContent=`${mi+1}.${si+1}`;
+  $('exm-tnote').textContent=`ข้อใหญ่ ${mi+1} ข้อย่อย ${si+1} — ย้อนกลับไม่ได้`;
+
+  // Image: sub-question's own image if exists, else major's image
+  const imgSrc=sq.dataUrl||(si===0?major.dataUrl:'');
+  const img=$('exm-img'),noImg=$('exm-noimg');
+  if(imgSrc){img.src=imgSrc;img.style.display='block';noImg.style.display='none';}
+  else{img.style.display='none';noImg.style.display='block';noImg.textContent=sq.caption||major.caption||'📋';}
+  $('exm-cap').textContent=sq.caption||(si===0?major.caption:'')||'';
+
+  $('exm-ans').innerHTML=`
+    <div class="ex-ans-card">
+      <div class="ex-ans-lbl"><div class="qi">${mi+1}.${si+1}</div>${sq.question||''}</div>
+      <textarea style="width:100%;min-height:120px;font-size:12px" id="am_${mqCur}" oninput="saveMEQField(this.value)" placeholder="Type answer...">${mqAnswers[mqCur]?.answer||''}</textarea>
+    </div>`;
+
+  renderMEQDots();
+  clearInterval(timerInt);tLeft=sq.timePerQ||90;
+  updateMEQTimer();
+  timerInt=setInterval(()=>{
+    tLeft--;updateMEQTimer();
+    if(tLeft<=0){clearInterval(timerInt);saveMEQCurrent();advanceMEQ();}
+  },1000);
+}
+
+function saveMEQField(val){if(mqAnswers[mqCur])mqAnswers[mqCur].answer=val;}
+function saveMEQCurrent(){const el=$('am_'+mqCur);if(el&&mqAnswers[mqCur])mqAnswers[mqCur].answer=el.value;}
+function advanceMEQ(){saveMEQCurrent();if(mqCur<mqFlat.length-1){mqCur++;loadMEQSub();}else finishMEQ();}
+
+function renderMEQDots(){
+  $('exm-dots').innerHTML=mqFlat.map((_,i)=>{
+    const cls='dot '+(i<mqCur?'d-done':i===mqCur?'d-cur':'d-idle');
+    const f=mqFlat[i];
+    return `<div class="${cls}" title="ข้อ ${f.mi+1}.${f.si+1}">${f.mi+1}.${f.si+1}</div>`;
+  }).join('');
+}
+
+function updateMEQTimer(){
+  const f=mqFlat[mqCur];const tot=f?.sq?.timePerQ||90,r=Math.max(0,tLeft/tot);
+  const m=Math.floor(tLeft/60),s=tLeft%60,lbl=m+':'+(s<10?'0':'')+s;
+  $('exm-main-t').textContent=lbl;$('exm-sm-t').textContent=lbl;
+  $('exm-main-arc').style.strokeDashoffset=138.2*(1-r);
+  $('exm-sm-arc').style.strokeDashoffset=94.2*(1-r);
+  [$('exm-main-arc').closest('.tring'),$('exm-sm-arc').closest('.tring')].forEach(ring=>{
+    if(!ring)return;ring.classList.remove('warn','danger');
+    if(r<0.2)ring.classList.add('danger');else if(r<0.4)ring.classList.add('warn');
+  });
+}
+
+function finishMEQ(){
+  clearInterval(timerInt);
+  // group answers by major
+  const grouped=(AX.items||[]).map((major,mi)=>({
+    answers:(major.subQuestions||[]).map((_,si)=>{
+      const idx=mqFlat.findIndex(f=>f.mi===mi&&f.si===si);
+      return{answer:mqAnswers[idx]?.answer||''};
+    })
+  }));
+  const res={id:genId(),examId:AX.id,examName:AX.name,examType:'MEQ',
+    student:ME.username,studentName:ME.name,
+    answers:grouped,submittedAt:new Date().toISOString()};
+  saveResult(res);
+}
+
+function saveResult(res){
+  const all=getAnswers();all.push(res);ss('answers',all);gSync('answers',all);
+  const exams=getExams();const xi=exams.findIndex(e=>e.id===AX.id);
+  if(xi>=0){exams[xi].usedDates=exams[xi].usedDates||[];exams[xi].usedDates.push(res.submittedAt);ss('exams',exams);}
+  lastRes=res;
+  $('done-sub').textContent=`บันทึกแล้ว · ${ME.name} · ${fmtD(res.submittedAt)}`;
+  showPage('pg-done');
+}
+
+/* ══════════════ ADMIN ══════════════ */
+function admTab(name,el){
+  document.querySelectorAll('.adm-sec').forEach(s=>s.classList.remove('on'));
+  document.querySelectorAll('.sm-i').forEach(i=>i.classList.remove('on'));
+  $('adm-'+name).classList.add('on');el.classList.add('on');
+  if(name==='users')renderAdmUsers();
+  if(name==='assign'){renderAdmAssign();}
+  if(name==='answers')renderAdmAnswers();
+  if(name==='stats')renderAdmStats();
+}
+function renderAdmUsers(){
+  const rm={admin:['b-red','🛡️'],teacher:['b-blue','👨‍🏫'],student:['b-green','🎓']};
+  $('adm-ulist').innerHTML=getUsers().map(u=>{const[b,ico]=rm[u.role]||['b-gray','👤'];
+    return `<div style="display:flex;align-items:center;gap:8px;padding:9px 13px;border-bottom:1px solid var(--border)">
+      <div style="width:32px;height:32px;border-radius:50%;background:var(--s2);display:flex;align-items:center;justify-content:center;font-size:14px">${ico}</div>
+      <div style="flex:1">
+        <div style="font-weight:700;font-size:13px">${u.name||u.username}</div>
+        <div style="font-size:10px;color:var(--txt2)">@${u.username} · <span class="badge ${b}" style="font-size:10px">${u.role}</span></div>
+      </div>
+      <button class="btn btn-ghost btn-sm" onclick="openEditUser('${u.username}')" style="margin-right:4px">✏️</button>
+      <button class="btn btn-red btn-sm" onclick="delUser('${u.username}')" ${u.username==='admin'?'disabled':''}>🗑️</button>
+    </div>`;}).join('');
+}
+function openAddUser(){
+  $('nu-u').value='';$('nu-p').value='';$('nu-n').value='';$('nu-r').value='student';
+  $('nu-u').disabled=false;
+  $('nu-edit-mode').value='';
+  if($('m-user-title'))$('m-user-title').textContent='➕ เพิ่มผู้ใช้งานใหม่';
+  if($('nu-pass-hint'))$('nu-pass-hint').style.display='none';
+  if($('nu-pass-req'))$('nu-pass-req').style.display='inline';
+  openM('m-user');
+}
+function openEditUser(username){
+  const u=getUsers().find(x=>x.username===username);
+  if(!u)return;
+  $('nu-u').value=u.username;
+  $('nu-u').disabled=true;
+  // Show current password (masked as dots for length reference)
+  $('nu-p').value=u.password||'';
+  $('nu-p').placeholder='รหัสผ่านปัจจุบัน (แก้ไขได้)';
+  $('nu-n').value=u.name||'';
+  $('nu-r').value=u.role||'student';
+  $('nu-edit-mode').value=username;
+  if($('m-user-title'))$('m-user-title').textContent='✏️ แก้ไขผู้ใช้: @'+username;
+  if($('nu-pass-hint'))$('nu-pass-hint').style.display='none';
+  if($('nu-pass-req'))$('nu-pass-req').style.display='none';
+  openM('m-user');
+}
+function saveUser(){
+  const editMode=($('nu-edit-mode')||{value:''}).value;
+  const u=$('nu-u').value.trim(),p=$('nu-p').value.trim(),n=$('nu-n').value.trim(),r=$('nu-r').value;
+  if(!u){alert('กรุณากรอก username');return;}
+  let users=getUsers();
+  if(editMode){
+    // Edit existing user
+    const idx=users.findIndex(x=>x.username===editMode);
+    if(idx<0){alert('ไม่พบผู้ใช้นี้');return;}
+    if(!p){alert('กรุณากรอก password');return;}
+    users[idx].name=n||users[idx].name;
+    users[idx].role=r;
+    users[idx].password=p;
+    setUsers(users);gSync('users',users);
+    closeM('m-user');renderAdmUsers();
+    alert('✅ แก้ไขข้อมูล @'+editMode+' เรียบร้อย');
+  } else {
+    // Add new user
+    if(!p){alert('กรุณากรอก password');return;}
+    if(users.find(x=>x.username===u)){alert('มีชื่อผู้ใช้ @'+u+' แล้ว');return;}
+    users.push({username:u,password:p,name:n||u,role:r});
+    setUsers(users);gSync('users',users);
+    closeM('m-user');renderAdmUsers();
+    alert('✅ เพิ่มผู้ใช้ @'+u+' เรียบร้อย');
+  }
+}
+function delUser(u){if(u==='admin')return;if(!confirm('ยืนยันลบ?'))return;setUsers(getUsers().filter(x=>x.username!==u));renderAdmUsers();}
+
+function renderAdmAssign(){
+  const sel=$('asgn-exam');
+  sel.innerHTML='<option value="">-- เลือก --</option>'+getExams().map(e=>`<option value="${e.id}">${e.name} (${e.type})</option>`).join('');
+  $('asgn-stu-wrap').style.display='none';
+}
+function renderAsgn(){
+  const eid=$('asgn-exam').value;if(!eid){$('asgn-stu-wrap').style.display='none';return;}
+  $('asgn-stu-wrap').style.display='block';
+  const assign=getAssign();const assigned=assign[eid]||[];
+  const students=getUsers().filter(u=>u.role==='student');
+  $('asgn-stu').innerHTML=students.map(u=>`
+    <label style="display:flex;align-items:center;gap:7px;padding:5px 7px;border-radius:4px;cursor:pointer;font-size:12px">
+      <input type="checkbox" value="${u.username}" ${assigned.includes(u.username)?'checked':''}>
+      ${u.name} <span style="color:var(--txt2);font-size:10px">@${u.username}</span>
+    </label>`).join('');
+}
+function aAll(v){document.querySelectorAll('#asgn-stu input').forEach(c=>c.checked=v);}
+function saveAsgn(){
+  const eid=$('asgn-exam').value;if(!eid){alert('เลือกข้อสอบก่อน');return;}
+  const checked=[...document.querySelectorAll('#asgn-stu input:checked')].map(c=>c.value);
+  const assign=getAssign();assign[eid]=checked;setAssign(assign);
+  alert(`✅ มอบหมายแล้ว ${checked.length} คน`);
+}
+
+let _curAnsId=null;
+function renderAdmAnswers(){
+  const ans=getAnswers().sort((a,b)=>new Date(b.submittedAt)-new Date(a.submittedAt));
+  const el=$('adm-alist');
+  if(!ans.length){el.innerHTML='<div class="empty"><div class="ei">📝</div><p>ยังไม่มีผลการสอบ</p></div>';return;}
+  el.innerHTML=`<table class="tbl"><thead><tr><th>ผู้สอบ</th><th>ชุดข้อสอบ</th><th>ประเภท</th><th>วันที่</th><th></th></tr></thead><tbody>
+    ${ans.map(a=>`<tr>
+      <td><b>${a.studentName}</b><br><span style="font-size:10px;color:var(--txt2)">@${a.student}</span></td>
+      <td>${a.examName}</td><td><span class="badge ${a.examType==='MEQ'?'b-blue':'b-purple'}">${a.examType}</span></td>
+      <td style="font-size:10px">${fmtD(a.submittedAt)}</td>
+      <td><button class="btn btn-ghost btn-sm" onclick="viewAns('${a.id}')">ดู</button></td>
+    </tr>`).join('')}</tbody></table>`;
+}
+function viewAns(id){
+  _curAnsId=id;
+  const ans=getAnswers().find(a=>a.id===id);
+  if(!ans)return;
+  const exam=getExams().find(e=>e.id===ans.examId);
+  if(!exam){alert('ไม่พบข้อสอบต้นฉบับในระบบ');return;}
+  $('av-t').textContent=ans.examName+' — '+ans.studentName;
+  let html='';
+
+  if(exam.type==='2Q'){
+    (exam.items||[]).forEach((item,si)=>{
+      const qs=(item.questions||[]).filter(q=>q&&q.trim());
+      html+='<div style="margin-bottom:16px;border:1px solid var(--border);border-radius:10px;overflow:hidden">';
+      // Header
+      html+='<div style="background:var(--navy);color:#fff;padding:9px 14px;font-size:13px;font-weight:700">ข้อ '+(si+1)+'</div>';
+      // Caption (above image)
+      if(item.caption){
+        html+='<div style="background:#f0f4fa;padding:9px 14px;font-size:13px;color:var(--txt);border-bottom:1px solid var(--border)">'+item.caption+'</div>';
+      }
+      // Image
+      if(item.dataUrl){
+        html+='<div style="background:#0c1a2e;padding:8px;text-align:center"><img src="'+item.dataUrl+'" style="max-width:100%;max-height:220px;object-fit:contain;border-radius:6px;display:inline-block"></div>';
+      }
+      // Q&A
+      html+='<div style="padding:12px">';
+      qs.forEach((q,qi)=>{
+        const a=(ans.answers&&ans.answers[si]&&ans.answers[si].answers)?ans.answers[si].answers[qi]||'(ว่าง)':'(ว่าง)';
+        html+='<div style="margin-bottom:10px">'
+          +'<div style="font-size:12px;font-weight:700;color:var(--blue);margin-bottom:4px">'+(si+1)+'.'+(qi+1)+') '+q+'</div>'
+          +'<div style="padding:7px 10px;background:var(--blue-pale);border-radius:6px;font-size:13px;border-left:3px solid var(--blue);white-space:pre-wrap">'+a+'</div>'
+          +'</div>';
+      });
+      html+='</div></div>';
+    });
+
+  } else {
+    // MEQ
+    (exam.items||[]).forEach((major,mi)=>{
+      html+='<div style="margin-bottom:16px;border:2px solid var(--navy);border-radius:10px;overflow:hidden">';
+      html+='<div style="background:var(--navy);color:#fff;padding:9px 14px;font-size:13px;font-weight:700">ข้อใหญ่ '+(mi+1)+(major.disease?' — '+major.disease:'')+'</div>';
+      (major.subQuestions||[]).forEach((sq,si)=>{
+        const a=(ans.answers&&ans.answers[mi]&&ans.answers[mi].answers&&ans.answers[mi].answers[si])
+          ?(ans.answers[mi].answers[si].answer||ans.answers[mi].answers[si]||'(ว่าง)'):'(ว่าง)';
+        html+='<div style="border-top:1px solid var(--border);padding:12px">';
+        html+='<div style="font-size:11px;font-weight:700;color:var(--navy);margin-bottom:6px;background:var(--blue-pale);padding:4px 8px;border-radius:4px">ข้อย่อย '+(mi+1)+'.'+(si+1)+'</div>';
+        // Caption above image
+        if(sq.caption){
+          html+='<div style="background:#f0f4fa;padding:7px 10px;border-radius:5px;font-size:13px;color:var(--txt);margin-bottom:7px">'+sq.caption+'</div>';
+        }
+        // Image
+        if(sq.dataUrl){
+          html+='<div style="background:#0c1a2e;padding:6px;border-radius:6px;text-align:center;margin-bottom:8px"><img src="'+sq.dataUrl+'" style="max-width:100%;max-height:200px;object-fit:contain;border-radius:5px;display:inline-block"></div>';
+        }
+        // Question
+        html+='<div style="font-size:13px;font-weight:700;color:var(--blue);margin-bottom:5px">'+sq.question+'</div>';
+        // Answer
+        html+='<div style="padding:7px 10px;background:var(--blue-pale);border-radius:6px;font-size:13px;border-left:3px solid var(--blue);white-space:pre-wrap">'+a+'</div>';
+        html+='</div>';
+      });
+      html+='</div>';
+    });
+  }
+  $('av-b').innerHTML=html;
+  openM('m-av');
+}
+function printOne(){
+  const ans=getAnswers().find(a=>a.id===_curAnsId);if(!ans)return;
+  const exam=getExams().find(e=>e.id===ans.examId);if(!exam)return;
+  buildPrint([{ans,exam}]);window.print();
+}
+function printAll(){
+  const pairs=getAnswers().map(a=>{const exam=getExams().find(e=>e.id===a.examId);return exam?{ans:a,exam}:null;}).filter(Boolean);
+  if(!pairs.length){alert('ยังไม่มีผลการสอบ');return;}
+  buildPrint(pairs);window.print();
+}
+function buildPrint(pairs){
+  let html='';
+  pairs.forEach(({ans,exam})=>{
+    html+='<div style="font-family:Sarabun,sans-serif;padding:20px;max-width:820px;margin:0 auto">'
+      +'<div style="text-align:center;margin-bottom:16px;padding-bottom:12px;border-bottom:2px solid #000">'
+      +'<h2 style="font-size:18px;font-weight:800">รายงานข้อสอบ '+exam.type+'</h2>'
+      +'<h3 style="font-size:15px;font-weight:600">'+exam.name+'</h3>'
+      +'<p style="font-size:12px;color:#555">ผู้สอบ: '+ans.studentName+' (@'+ans.student+') | '+fmtD(ans.submittedAt)+'</p>'
+      +'</div>';
+
+    if(exam.type==='2Q'){
+      (exam.items||[]).forEach((item,si)=>{
+        const qs=(item.questions||[]).filter(q=>q&&q.trim());
+        html+='<div style="margin-bottom:20px;page-break-inside:avoid;border:1px solid #ccc;border-radius:8px;overflow:hidden">';
+        // Header bar
+        html+='<div style="background:#0b1f3a;color:#fff;padding:8px 14px;font-size:13px;font-weight:800">ข้อ '+(si+1)+'</div>';
+        // Caption ABOVE image
+        if(item.caption){
+          html+='<div style="padding:8px 14px;background:#f5f7fa;font-size:13px;font-weight:500;border-bottom:1px solid #ddd">'+item.caption+'</div>';
+        }
+        // Image
+        if(item.dataUrl){
+          html+='<div style="background:#0c1a2e;padding:8px;text-align:center">'
+            +'<img src="'+item.dataUrl+'" style="max-width:100%;max-height:260px;object-fit:contain;border-radius:5px;display:inline-block">'
+            +'</div>';
+        }
+        // Q&A
+        html+='<div style="padding:12px 14px">';
+        qs.forEach((q,qi)=>{
+          const a=(ans.answers&&ans.answers[si]&&ans.answers[si].answers)?
+            (ans.answers[si].answers[qi]||'(ไม่มีคำตอบ)'):'(ไม่มีคำตอบ)';
+          html+='<div style="margin-bottom:12px">'
+            +'<div style="font-size:12px;font-weight:700;color:#1a50a0;margin-bottom:4px">'+(si+1)+'.'+(qi+1)+') '+q+'</div>'
+            +'<div style="padding:6px 10px;background:#e8f1fc;border-radius:5px;font-size:13px;border-left:3px solid #1a6fd4;min-height:26px;white-space:pre-wrap">'+a+'</div>'
+            +'</div>';
+        });
+        html+='</div></div>';
+      });
+
+    } else {
+      // MEQ
+      (exam.items||[]).forEach((major,mi)=>{
+        html+='<div style="margin-bottom:20px;page-break-inside:avoid;border:2px solid #0b1f3a;border-radius:8px;overflow:hidden">';
+        html+='<div style="background:#0b1f3a;color:#fff;padding:8px 14px;font-size:13px;font-weight:800">ข้อใหญ่ '+(mi+1)+(major.disease?' — '+major.disease:'')+'</div>';
+
+        (major.subQuestions||[]).forEach((sq,si)=>{
+          const rawA=(ans.answers&&ans.answers[mi]&&ans.answers[mi].answers&&ans.answers[mi].answers[si]);
+          const a=rawA?(rawA.answer||rawA||'(ไม่มีคำตอบ)'):'(ไม่มีคำตอบ)';
+
+          html+='<div style="border-top:1px solid #ccc;padding:12px 14px">';
+          // Sub-Q label
+          html+='<div style="font-size:11px;font-weight:700;background:#dbeafe;color:#1e40af;padding:3px 8px;border-radius:4px;display:inline-block;margin-bottom:7px">ข้อย่อย '+(mi+1)+'.'+(si+1)+'</div>';
+          // Caption ABOVE image
+          if(sq.caption){
+            html+='<div style="padding:7px 10px;background:#f5f7fa;border-radius:5px;font-size:13px;font-weight:500;margin-bottom:7px;border-left:3px solid #94a3b8">'+sq.caption+'</div>';
+          }
+          // Image
+          if(sq.dataUrl){
+            html+='<div style="background:#0c1a2e;padding:6px;border-radius:6px;text-align:center;margin-bottom:8px">'
+              +'<img src="'+sq.dataUrl+'" style="max-width:100%;max-height:240px;object-fit:contain;border-radius:4px;display:inline-block">'
+              +'</div>';
+          }
+          // Question
+          html+='<div style="font-size:13px;font-weight:700;color:#1a50a0;margin-bottom:6px">'+sq.question+'</div>';
+          // Answer
+          html+='<div style="padding:7px 10px;background:#e8f1fc;border-radius:5px;font-size:13px;border-left:3px solid #1a6fd4;min-height:26px;white-space:pre-wrap">'+a+'</div>';
+          html+='</div>';
+        });
+        html+='</div>';
+      });
+    }
+
+    html+='</div><div style="page-break-after:always"></div>';
+  });
+  $('print-area').innerHTML=html;
+}
+function renderAdmStats(){
+  const exams=getExams(),ans=getAnswers(),users=getUsers();
+  $('adm-sg').innerHTML=`
+    <div class="stat"><div class="si">👥</div><div><div class="sv">${users.length}</div><div class="sl">ผู้ใช้</div></div></div>
+    <div class="stat"><div class="si">📋</div><div><div class="sv">${exams.length}</div><div class="sl">ชุดข้อสอบ</div></div></div>
+    <div class="stat"><div class="si">📝</div><div><div class="sv">${ans.length}</div><div class="sl">ผลสอบ</div></div></div>`;
+  if(!ans.length){$('adm-sb').innerHTML='<div class="empty"><div class="ei">📊</div><p>ยังไม่มีข้อมูล</p></div>';return;}
+  const map={};ans.forEach(a=>{if(!map[a.examId])map[a.examId]={name:a.examName,count:0};map[a.examId].count++;});
+  $('adm-sb').innerHTML=`<table class="tbl"><thead><tr><th>ชุดข้อสอบ</th><th>จำนวนผลสอบ</th></tr></thead><tbody>
+    ${Object.values(map).sort((a,b)=>b.count-a.count).map(e=>`<tr><td>${e.name}</td><td><b>${e.count}</b></td></tr>`).join('')}</tbody></table>`;
+}
+function saveGS(){
+  const url=($('gs-url')||{value:''}).value.trim();
+  if(!url){alert('กรุณากรอก URL');return;}
+  localStorage.setItem('meq_gs',url);
+  alert('✅ บันทึก Google Sheets URL แล้ว');
+}
+async function testGS(){
+  const url=(($('gs-url')&&$('gs-url').value.trim())||_GS_URL);
+  try{
+    await fetch(url,{method:'POST',mode:'no-cors',body:JSON.stringify({sheet:'test',data:{},ts:Date.now()})});
+    alert('✅ ส่งคำขอทดสอบแล้ว ตรวจสอบที่ Google Sheet > SyncLog');
+  }catch(e){
+    alert('❌ ไม่สามารถเชื่อมต่อ: '+e.message);
+  }
+}
+
+/* ══════════════ BANK ══════════════ */
+function renderBank(){
+  const tf=$('bk-tf').value,s=($('bk-q').value||'').toLowerCase();
+  const list=getExams().filter(e=>(!tf||e.type===tf)&&(!s||e.name.toLowerCase().includes(s))).sort((a,b)=>new Date(b.createdAt)-new Date(a.createdAt));
+  const el=$('bk-grid');
+  if(!list.length){el.innerHTML='<div class="empty" style="grid-column:1/-1"><div class="ei">🗂️</div><p>ไม่พบข้อสอบ</p></div>';return;}
+  el.innerHTML=list.map(e=>`
+    <div class="bcard" onclick="showDetail('${e.id}');showPage('pg-teacher')">
+      <div class="bthumb">${(e.items||[])[0]?.dataUrl?`<img src="${(e.items||[])[0].dataUrl}" alt="">`:'<span style="font-size:28px;opacity:.3">📋</span>'}
+        <span class="badge ${e.type==='MEQ'?'b-blue':'b-purple'}" style="position:absolute;top:6px;left:6px">${e.type}</span></div>
+      <div style="padding:10px">
+        <div style="font-weight:700;font-size:13px;margin-bottom:2px">${e.name}</div>
+        <div style="font-size:11px;color:var(--txt2)">${(e.items||[]).length} ${e.type==='MEQ'?'ข้อใหญ่':'ข้อ'}</div>
+      </div>
+      <div style="padding:6px 10px;border-top:1px solid var(--border);display:flex;justify-content:space-between;font-size:10px">
+        <span style="color:var(--txt2)">${e.createdBy}</span>
+        <span class="badge ${(e.usedDates?.length||0)>0?'b-green':'b-gray'}">ใช้ ${e.usedDates?.length||0} ครั้ง</span>
+      </div>
+    </div>`).join('');
+}
+
+/* ══════════════ MODAL ══════════════ */
+function openM(id){$(id).classList.add('open');}
+function closeM(id){$(id).classList.remove('open');}
+document.querySelectorAll('.overlay').forEach(o=>o.addEventListener('click',e=>{if(e.target===o)o.classList.remove('open');}));
+
+
+/* ══════════════ CSV IMPORT / EXPORT ══════════════ */
+
+function downloadTemplate(){
+  const CRLF='\r\n';
+  if(crType==='2Q'){
+    const rows=[
+      '2Q Template',
+      'ข้อที่,ชื่อโรค/Tag,ข้อความโจทย์,คำถาม 1,คำถาม 2,คำถาม 3,คำถาม 4',
+      '1,Psoriasis,ผู้ป่วยชาย 35 ปี ผื่นหนาแดงคัน,What is the most likely diagnosis?,List 3 differential diagnoses.,Outline the treatment plan.,',
+      '2,DM Type 2,หญิง 58 ปี เบาหวาน HbA1c 9.8%,List diabetic complications found.,What investigations would you order?,What is the management plan.,,',
+      '3,Acute Appendicitis,ชาย 28 ปี ปวดท้อง RLQ,Diagnose and justify.,What imaging/labs are needed?,Outline the surgical management.,,',
+    ];
+    dlCSV('template_2Q.csv',rows.join(CRLF));
+  } else {
+    const rows=[
+      'MEQ Template',
+      'ข้อใหญ่,Tag โรค,ข้อย่อย,เวลา(วิ),ข้อความ/Caption,คำถาม',
+      '1,Psoriasis,1,90,History: Male 35y erythematous plaques x3yr,What is the most likely diagnosis? Give supporting evidence.',
+      '1,Psoriasis,2,60,,List 3 differential diagnoses with distinguishing features.',
+      '1,Psoriasis,3,90,Skin biopsy: parakeratosis + Munro microabscesses,Interpret the biopsy findings.',
+      '2,Psoriatic Arthritis,1,90,6 months later: swollen finger joints,Diagnose and justify.',
+      '2,Psoriatic Arthritis,2,90,,How would you modify the treatment?',
+    ];
+    dlCSV('template_MEQ.csv',rows.join(CRLF));
+  }
+}
+
+function dlCSV(filename, csv){
+  const blob=new Blob(['﻿'+csv],{type:'text/csv;charset=utf-8;'});
+  const url=URL.createObjectURL(blob);
+  const a=document.createElement('a');
+  a.href=url;a.download=filename;a.click();
+  URL.revokeObjectURL(url);
+}
+
+function importCSV(e){
+  var file=e.target.files[0];
+  if(!file)return;
+  var reader=new FileReader();
+  reader.onload=function(ev){
+    try{
+      var raw=ev.target.result;
+      var text=raw.charAt(0)==='\uFEFF'?raw.slice(1):raw;
+      var allLines=[];
+      var cur='';
+      for(var ci=0;ci<text.length;ci++){
+        var ch=text[ci];
+        if(ch==='\r'&&text[ci+1]==='\n'){allLines.push(cur);cur='';ci++;}
+        else if(ch==='\r'||ch==='\n'){allLines.push(cur);cur='';}
+        else{cur+=ch;}
+      }
+      if(cur.trim())allLines.push(cur);
+      var lines=allLines.filter(function(l){return l.trim();});
+      var dataLines=lines.slice(2);
+      if(!dataLines.length){alert('ไม่พบข้อมูลใน CSV');return;}
+      gatherAll();
+      if(crType==='2Q'){import2Q(dataLines);}
+      else{importMEQ(dataLines);}
+      renderCrRight();
+      alert('Import สำเร็จ '+dataLines.length+' แถว - กรุณาตรวจสอบก่อนบันทึก');
+    }catch(err){
+      alert('Import ผิดพลาด: '+(err&&err.message||String(err)));
+    }
+  };
+  reader.readAsText(file,'UTF-8');
+  e.target.value='';
+}
+
+function parseCSVLine(line){
+  const result=[];let cur='';let inQ=false;
+  for(let i=0;i<line.length;i++){
+    const c=line[i];
+    if(c==='"'){inQ=!inQ;}
+    else if(c===','&&!inQ){result.push(cur.trim());cur='';}
+    else{cur+=c;}
+  }
+  result.push(cur.trim());
+  return result;
+}
+
+function import2Q(lines){
+  const newItems=[];
+  lines.forEach(line=>{
+    if(!line.trim())return;
+    const cols=parseCSVLine(line);
+    // ข้อที่, ชื่อโรค, ข้อความโจทย์, คำถาม1, คำถาม2, ...
+    const qNum=parseInt(cols[0]||'0');
+    if(isNaN(qNum)||qNum<1)return;
+    const disease=(cols[1]||'').trim();
+    const caption=(cols[2]||'').trim();
+    const questions=cols.slice(3).map(q=>q.trim()).filter(q=>q);
+    const t=parseInt(($('cr-2q-shared-time')||{value:'90'}).value)||90;
+    newItems.push({id:genId(),timePerQ:t,dataUrl:'',caption,disease,questions:questions.length?questions:['']});
+  });
+  if(newItems.length) crItems=[...crItems,...newItems];
+}
+
+function importMEQ(lines){
+  // group by major question number
+  const majorMap={};
+  lines.forEach(line=>{
+    if(!line.trim())return;
+    const cols=parseCSVLine(line);
+    // ข้อใหญ่, Tag โรค, ข้อย่อย, เวลา, caption, คำถาม
+    const mNum=parseInt(cols[0]||'0');
+    const subNum=parseInt(cols[2]||'0');
+    if(isNaN(mNum)||mNum<1)return;
+    if(!majorMap[mNum]) majorMap[mNum]={disease:(cols[1]||'').trim(),subs:[]};
+    majorMap[mNum].subs.push({
+      id:genId(),
+      timePerQ:parseInt(cols[3])||90,
+      caption:(cols[4]||'').trim(),
+      question:(cols[5]||'').trim(),
+      dataUrl:'',
+    });
+    if(cols[1]&&cols[1].trim()) majorMap[mNum].disease=cols[1].trim();
+  });
+  Object.keys(majorMap).sort((a,b)=>parseInt(a)-parseInt(b)).forEach(k=>{
+    const m=majorMap[k];
+    crItems.push({id:genId(),disease:m.disease,subQuestions:m.subs.length?m.subs:[{id:genId(),timePerQ:90,question:'',dataUrl:'',caption:''}]});
+  });
+}
+
+/* ══════════════ FIXED PASTE HANDLER ══════════════ */
+
+/* ══════════════ INIT ══════════════ */
+// Pre-fill GS URL
+const _gs=localStorage.getItem('meq_gs')||_GS_URL;
+localStorage.setItem('meq_gs',_gs);
+if($('gs-url'))$('gs-url').value=_gs;
+initSamples();
+</script>
+</body>
+</html>
